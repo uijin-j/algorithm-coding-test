@@ -6,7 +6,7 @@ public class Main {
     static boolean[] check;
     static int[] dis;
 
-    static void bfs(int s, int l) {
+    static void bfs(int s) {
         Queue<Integer> q = new LinkedList<>();
         dis[s] = 0;
         q.offer(s);
@@ -40,7 +40,7 @@ public class Main {
           hash.get(a).add(b);
         }
 
-        bfs(x, 0);
+        bfs(x);
 
         boolean flag = true;
         for(int i = 1; i <= n; ++i) {

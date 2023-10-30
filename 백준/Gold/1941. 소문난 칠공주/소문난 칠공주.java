@@ -27,11 +27,9 @@ public class Main {
     Scanner sc = new Scanner(System.in);
 
     for(int i = 0; i < 5; ++i) {
-      String row = sc.nextLine();
-
-      int j = 0;
-      for(char c: row.toCharArray()) {
-        tables[i][j++] = c;
+      String line = sc.nextLine();
+      for(int j = 0; j < 5; ++j) {
+        tables[i][j] = line.charAt(j);
       }
     }
 
@@ -43,9 +41,7 @@ public class Main {
   // 7공주를 선택하는 메서드
   static void selectPrincess(int count, int countS, Point now) {
     if(count == 7) {
-      if(countS >= 4 && isConnected()) {
-        answer++;
-      }
+      if(countS >= 4 && isConnected()) answer++;
       return;
     }
 
@@ -58,12 +54,13 @@ public class Main {
     selectPrincess(count, countS, now.getNext());
   }
 
+  // 7공주 자리가 연결되어 있는지 확인하는 메서드
   static boolean isConnected() {
     boolean[][] selectedCopy = copy(selected);
 
     for(int i = 0; i < 5; ++i) {
       for(int j = 0; j < 5; ++j) {
-        if(selectedCopy[i][j]) {
+        if(selectedCopy[i][j]) { // 7공주 중 한명을 찾으면
           dfs(selectedCopy, new Point(i, j));
           if(isAllUnSelected(selectedCopy)) return true;
           return false;
@@ -74,6 +71,7 @@ public class Main {
     return false;
   }
 
+  // Point로 들어온 자리의 공주랑 연결된 다른 공주 자리를 false로 변경
   static void dfs(boolean[][] arr, Point now) {
     for(int i = 0; i< 4; ++i) {
       int nx = now.x + dx[i];

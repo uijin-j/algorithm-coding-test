@@ -31,7 +31,6 @@ public class Main {
     while (!q.isEmpty()) {
       int now = q.poll();
 
-      // 한번 돌려서 6칸
       for(int i = 1; i <= 6; ++i) {
         int next = now + i;
         if(next > 100) return;
@@ -40,11 +39,11 @@ public class Main {
           return;
         };
 
-        if(board[next] != 0) {
+        if(board[next] != 0) { // 뱀 또는 사다리에 연결됨
           next = board[now + i];
         }
 
-        if(dp[next] == 0) {
+        if(dp[next] == 0) { // 아직 최소거리 확정 X
           dp[next] = dp[now] + 1;
           q.offer(next);
         }

@@ -21,7 +21,7 @@ public class Main {
         index = parent[index];
     }
 
-    stack.push(index);
+    stack.push(n);
 
     while (!stack.isEmpty()) {
         System.out.print(stack.pop() + " ");

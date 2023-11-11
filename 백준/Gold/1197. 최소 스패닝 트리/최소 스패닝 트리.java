@@ -1,67 +1,57 @@
 import java.util.*;
 
 public class Main {
-  static int v, e;
-  static List<Node> nodeList = new ArrayList<>();
-  static int[] parents;
-
-  static class Node {
-    int from;
+  static List<Edge>[] graph; // graph[i]는 i번째 노드와 연결된 간선들
+  static boolean[] visited;
+ 
+  static class Edge {
     int to;
-    int weight;
+    int cost;
 
-    public Node(int from, int to, int weight) {
-      this.from = from;
+    public Edge(int to, int cost) {
       this.to = to;
-      this.weight = weight;
+      this.cost = cost;
     }
   }
 
-  
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
-    v = sc.nextInt();
-    e = sc.nextInt();
-    parents = new int[v + 1];
-    for(int i = 1; i <= v; ++i) {
-      parents[i] = i; // i번째 노드는 i집합에 속함
-    }
+    int v = sc.nextInt();
+    int e = sc.nextInt();
+    visited = new boolean[v+1];
+    graph = new ArrayList[v + 1];
+    for (int i = 0; i <= v; i++) graph[i] = new ArrayList<>();
 
     for(int i = 0; i < e; ++i) {
       int from = sc.nextInt();
       int to = sc.nextInt();
-      int weight = sc.nextInt();
+      int cost = sc.nextInt();
 
-      nodeList.add(new Node(from, to, weight));
+      graph[from].add(new Edge(to, cost));
+      graph[to].add(new Edge(from, cost));
     }
 
-    nodeList.sort((a, b) -> a.weight - b.weight);
+    // prim
+    PriorityQueue<Edge> q = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+    q.offer(new Edge(1, 0));
 
     int answer = 0;
-    for(Node node: nodeList) {
-      if(makeUnion(node)) {
-        answer += node.weight;
+    while (!q.isEmpty()) {
+      Edge now = q.poll();
+
+      if(visited[now.to]) continue;
+
+      visited[now.to] = true;
+      answer += now.cost;
+
+      for(Edge edge : graph[now.to]) {
+        if(!visited[edge.to]) {
+          q.offer(edge);
+        }
       }
     }
 
     System.out.println(answer);
-  }
-
-  public static boolean makeUnion(Node node) {
-    int fromRoot = findRoot(node.from);
-    int toRoot = findRoot(node.to);
-
-    if(fromRoot != toRoot) {
-      parents[toRoot] = fromRoot;
-      return true;
-    }
-
-    return false;
-  }
-
-  public static int findRoot(int v) {
-    if(parents[v] == v) return v;
-    return findRoot(parents[v]);
   }
 }

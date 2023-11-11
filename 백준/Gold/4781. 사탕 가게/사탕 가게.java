@@ -23,10 +23,10 @@ public class Main {
 
       List<Candy> candies = new ArrayList<>();
       for(int i = 0; i < n; ++i) {
-        int price = sc.nextInt();
-        int kcal = (int) Math.round(sc.nextFloat() * 100f);
+        int kcal = sc.nextInt();
+        int price = (int) Math.round(sc.nextFloat() * 100f);
 
-        candies.add(new Candy(price, kcal));
+        candies.add(new Candy(kcal, price));
       }
 
       int[] dp = new int[m + 1]; // dp[i]는 i/100원이 있을 때 구매할 수 있는 최대 칼로리

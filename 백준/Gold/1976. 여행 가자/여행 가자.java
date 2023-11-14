@@ -39,7 +39,7 @@ public class Main {
     int toParent = find(to);
     int fromParent = find(from);
 
-    if(toParent == fromParent) return;
+    // if(toParent == fromParent) return;
     parents[fromParent] = toParent;
   }
 

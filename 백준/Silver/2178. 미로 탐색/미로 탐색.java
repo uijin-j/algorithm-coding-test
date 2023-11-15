@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class Main {
+  static int[][] board;
   static int[] dx = {-1, 0, 1, 0};
   static int[] dy = {0, 1, 0, -1};
 
@@ -17,42 +18,41 @@ public class Main {
     Scanner sc = new Scanner(System.in);
     int n = sc.nextInt();
     int m = sc.nextInt();
-    int[][] map = new int[n][m];
+    board = new int[n+1][m+1]; // 미로판
 
     sc.nextLine();
-    for(int i = 0; i < n; ++i) {
-      String row = sc.nextLine();
+    for(int i = 1; i <= n; ++i) { // 입력값
+      String line = sc.nextLine();
       int j = 0;
-      for(char c : row.toCharArray()) {
-        map[i][j++] = c - '0';
+      for(char c : line.toCharArray()) {
+        board[i][++j] = c - '0';
       }
     }
 
-    int answer = bfs(n, m, map);
-    System.out.println(answer);
+    System.out.println(bfs(n, m, board));
   }
 
-  static int bfs(int n, int m, int[][] map) {
+  // (1, 1)에서 (n, m)으로 가는 최단거리를 리턴
+  static int bfs(int n, int m, int[][] board) {
     Queue<Point> q = new LinkedList<>();
     
-    map[0][0] = 0;
-    q.offer(new Point(0, 0));
+    board[1][1] = 0;
+    q.offer(new Point(1, 1));
 
-    int count = 1;
+    int count = 1; // 지나온 칸 수
     while (!q.isEmpty()) {
       int size = q.size();
 
-      for(int i = 0; i < size; ++i) {
+      for(int i = 0; i < size; ++i) { // 한 depth를 탐색
         Point now = q.poll();
 
         for(int j = 0; j < 4; ++j) {
           int nx = now.x + dx[j];
           int ny = now.y + dy[j];
 
-          if(nx == n-1 && ny == m-1) return count + 1;
-
-          if(nx >= 0 && nx < n && ny >= 0 && ny < m && map[nx][ny] == 1) {
-            map[nx][ny] = 0;
+          if(nx == n-1 && ny == m-1) return count + 1; // 다음칸에서 도착이므로 '지금까지 지나온 칸 + 다음칸' 리턴
+          if(nx >= 1 && nx <= n && ny >= 1 && ny <= m && board[nx][ny] == 1) {
+            board[nx][ny] = 0; // 방문 check
             q.offer(new Point(nx, ny));
           }
         }
@@ -61,6 +61,6 @@ public class Main {
       count++;
     }
 
-    return -1;
+    return -1; // 경로가 없는 경우
   }
 }

@@ -21,11 +21,11 @@ public class Main {
     board = new int[n+1][m+1]; // 미로판
 
     sc.nextLine();
-    for(int i = 1; i <= n; ++i) { // 입력값
+    for(int i = 1; i <= n; ++i) { //입력
       String line = sc.nextLine();
-      int j = 0;
+      int j = 1;
       for(char c : line.toCharArray()) {
-        board[i][++j] = c - '0';
+        board[i][j++] = c - '0';
       }
     }
 
@@ -50,7 +50,7 @@ public class Main {
           int nx = now.x + dx[j];
           int ny = now.y + dy[j];
 
-          if(nx == n-1 && ny == m-1) return count + 1; // 다음칸에서 도착이므로 '지금까지 지나온 칸 + 다음칸' 리턴
+          if(nx == n && ny == m) return count + 1; // 다음칸에서 도착이므로 '지금까지 지나온 칸 + 다음칸' 리턴
           if(nx >= 1 && nx <= n && ny >= 1 && ny <= m && board[nx][ny] == 1) {
             board[nx][ny] = 0; // 방문 check
             q.offer(new Point(nx, ny));

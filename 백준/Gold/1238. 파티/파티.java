@@ -64,10 +64,10 @@ public class Main {
 
       if(now.time > min[now.to]) continue;
 
-      for(Node node: list.get(now.to)) {
-        if(now.time + node.time < min[node.to]) {
-          min[node.to] = now.time + node.time;
-          q.offer(new Node(node.to, min[node.to]));
+      for(Node next: list.get(now.to)) {
+        if(now.time + next.time < min[next.to]) {
+          min[next.to] = now.time + next.time;
+          q.offer(new Node(next.to, min[next.to]));
         }
       }
     }

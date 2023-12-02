@@ -1,9 +1,9 @@
-import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String number = sc.nextLine();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String number = br.readLine();
         int len = number.length();
         int[] dp = new int[len + 1]; // dp[i]는 첫번째 숫자부터 i개 숫자의 합
 

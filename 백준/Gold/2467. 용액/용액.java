@@ -1,37 +1,41 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+    public static void main(String[] args) throws Exception {
+        // dfs -> 100,000 * 100,000 = 10,000,000,000 (시간 초과)
+        // 양쪽에서 더했을 때 0에 가까울 확률 up!
+        // 가장 양쪽을 더함 -> +라면 더 많이 빼야 함으로 오른쪽을 한칸 앞으로
+        //              -> -라면 더 많이 더해야 함으로 왼쪽을 한칸 뒤로
+        //              => 투포인터?
 
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int n = Integer.parseInt(br.readLine());
-		
-		long[] arr = new long[n];
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		for(int i=0; i<n; i++) {
-			arr[i] = Long.parseLong(st.nextToken());
-		}
-		
-		int left =0;
-		int right =n-1;
-		int ml =0, mr = 0;
-		long min = Long.MAX_VALUE;
-		while(left<right) {
-			long sum = arr[left]+arr[right];
-			if(min > Math.abs(sum)) {
-				min = Math.abs(sum);
-				ml = left; mr = right;
-			}
-			if(sum>=0) {
-				right--;	
-			}else {
-				left++;
-			}
-		}
-		System.out.println(arr[ml] +" "+arr[mr]);
-	}
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(bf.readLine());
+        long[] values = new long[n];
+
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+        for(int i = 0; i < n; ++i) {
+            values[i] = Long.parseLong(st.nextToken());
+        }
+
+        int left = 0, right = n - 1;
+        long min = Long.MAX_VALUE;
+        int l = 0, r = n - 1;
+        while(left < right) {
+            long sum = values[left] + values[right];
+            if(Math.abs(sum) < min) {
+                min = Math.abs(sum);
+                l = left;
+                r = right;
+            }
+
+            if(sum < 0) {
+                left++;
+            } if(sum >= 0) {
+                right--;
+            }
+        }
+
+        System.out.println(values[l] + " " + values[r]);
+    }
 }

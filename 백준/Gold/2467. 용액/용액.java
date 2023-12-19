@@ -11,18 +11,18 @@ public class Main {
 
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(bf.readLine());
-        long[] values = new long[n];
+        int[] values = new int[n];
 
         StringTokenizer st = new StringTokenizer(bf.readLine());
         for(int i = 0; i < n; ++i) {
-            values[i] = Long.parseLong(st.nextToken());
+            values[i] = Integer.parseInt(st.nextToken());
         }
 
         int left = 0, right = n - 1;
-        long min = Long.MAX_VALUE;
+        int min = Integer.MAX_VALUE;
         int l = 0, r = n - 1;
         while(left < right) {
-            long sum = values[left] + values[right];
+            int sum = values[left] + values[right];
             if(Math.abs(sum) < min) {
                 min = Math.abs(sum);
                 l = left;

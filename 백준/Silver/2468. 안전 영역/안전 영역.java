@@ -22,7 +22,7 @@ public class Main {
         }
 
         int maxCount = 0;
-        for(int i = 0; i <= 100; ++i) {
+        for(int i = min - 1; i <= max; ++i) {
             int count = 0;
             // i만큼 잠길 때
             boolean[][] checked = check(area, i);

@@ -1,15 +1,33 @@
+/******************************************************************************
+
+                            Online Java Compiler.
+                Code, Compile, Run and Debug java program online.
+Write your code in this editor and press "Run" button to execute it.
+
+*******************************************************************************/
 import java.io.*;
 import java.util.*;
 
 public class Main
 {
-    static int INF = 1500;
+    static int n, m, r;
+    static List<List<Node>> roads;
+
+    static class Node {
+        int node, dist;
+
+        Node(int node, int dist) {
+            this.node = node;
+            this.dist = dist;
+        }
+    }
+
 	public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(bf.readLine());
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        int r = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+        r = Integer.parseInt(st.nextToken());
 
         int[] items = new int[n+1];
         st = new StringTokenizer(bf.readLine());
@@ -17,10 +35,9 @@ public class Main
             items[i] = Integer.parseInt(st.nextToken());
         }
 
-        int[][] dists = new int[n+1][n+1];
-        for(int i = 1; i <= n; ++i) {
-            Arrays.fill(dists[i], INF);
-            dists[i][i] = 0;
+        roads = new ArrayList<>();
+        for(int i = 0; i <= n; ++i) {
+            roads.add(new ArrayList<>());
         }
 
         for(int i = 0; i < r; ++i) {
@@ -29,17 +46,18 @@ public class Main
             int area2 = Integer.parseInt(st.nextToken());
             int dist = Integer.parseInt(st.nextToken());
 
-            dists[area1][area2] = dist;
-            dists[area2][area1] = dist;
+            roads.get(area1).add(new Node(area2, dist));
+            roads.get(area2).add(new Node(area1, dist));
+        }
+
+        int[][] dists = new int[n+1][n+1];
+        for(int i = 1; i <= n; ++i) {
+            Arrays.fill(dists[i], Integer.MAX_VALUE);
         }
         
-        // 플로이드-와샬
-        for(int k = 1; k <= n; ++k) {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    dists[i][j] = Math.min(dists[i][j], dists[i][k] + dists[k][j]);
-                }
-            }
+        // 다익스트라 * n번
+        for(int i = 1; i <= n; ++i) {
+            dijkstra(i, dists[i]);
         }
 
         int max = 0;
@@ -55,4 +73,24 @@ public class Main
 
         System.out.println(max);
 	}
+
+    static void dijkstra(int start, int[] dist) {
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.dist - b.dist);
+        pq.offer(new Node(start, 0));
+        dist[start] = 0;
+
+        while(!pq.isEmpty()) {
+            Node now = pq.poll();
+            
+            if(dist[now.node] < now.dist) continue;
+            dist[now.node] = now.dist;
+
+            for(Node next : roads.get(now.node)) {
+                if(dist[next.node] > dist[now.node] + next.dist) {
+                    dist[next.node] = dist[now.node] + next.dist;
+                    pq.offer(new Node(next.node, dist[next.node]));
+                }
+            }
+        }
+    }
 }

@@ -37,18 +37,18 @@ class Solution {
     }
     
     private void decideType(int node, int first, Map<Integer, List<Integer>> in, Map<Integer, List<Integer>> out) {
-        if(!out.containsKey(node) || !in.containsKey(node)) {
+        if(!out.containsKey(node) || !in.containsKey(node)) { // 막대 타입
             answer[2] += 1;
             return;
         }
         
-        if(out.get(node).size() > 1) {
+        if(out.get(node).size() > 1) { // 8자 타입
             answer[3] += 1;
             return;
         }
         
         int next = out.get(node).get(0);
-        if(next == first) {
+        if(next == first) { // 도넛 타입
             answer[1] += 1;
             return;
         }

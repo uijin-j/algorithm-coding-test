@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main
 {
-	public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(bf.readLine());
         int n = Integer.parseInt(st.nextToken());

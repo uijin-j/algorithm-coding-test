@@ -30,7 +30,8 @@ public class Main
             students.add(new Student(i, 0, 0));
         }
 
-        int count = 0;
+        int sequence = 0;
+        int count = 0; // 후보자 수
         for(int i = 0; i < k; ++i) {
             int num = Integer.parseInt(st.nextToken());
             Student student = students.get(num);
@@ -49,10 +50,12 @@ public class Main
 
                 removed.votes = 0;
                 removed.offeredAt = 0;
+                count--;
             }
 
             student.votes = 1;
-            student.offeredAt = ++count;
+            student.offeredAt = ++sequence;
+            count++;
         }
 
         for(int i = 1; i <= 100; ++i) {

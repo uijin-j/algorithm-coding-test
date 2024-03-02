@@ -28,7 +28,7 @@ public class Main
                 info[i][j][1] = info[i-1][j][1] + 1;
                 
                 if(info[i][j-1][0] == 0 || info[i-1][j][0] == 0 || info[i-1][j-1][2] == 0) info[i][j][2] = 1;
-                info[i][j][2] = Math.min(Math.min(info[i][j][0], info[i][j][1]), info[i-1][j-1][2] + 1);
+                else info[i][j][2] = Math.min(Math.min(info[i][j][0], info[i][j][1]), info[i-1][j-1][2] + 1);
 
                 max = Math.max(max, info[i][j][2]);
             }

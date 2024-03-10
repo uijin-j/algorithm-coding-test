@@ -8,9 +8,9 @@ public class Main
         int n = Integer.parseInt(bf.readLine());
         long[][][] dp = new long[n+1][10][1<<10]; // dp[i][j][k]: j로 끝나는 i자리 숫자 (이진수 k에 마킹된 수를 모두 사용)
 
-		for(int i = 1; i < 10; i++) {
-			dp[1][i][1<<i] = 1; // i로 끝나는 1자리 숫자 (i포함)
-		}
+	for(int i = 1; i < 10; i++) {
+		dp[1][i][1<<i] = 1; // i로 끝나는 1자리 숫자 (i포함)
+	}
 
         for(int i = 2; i < n + 1; ++i) { // 2자리 숫자 ~ n자리 숫자
             for(int j = 0; j < 10; ++j) { // 0으로 끝남 ~ 9로 끝남

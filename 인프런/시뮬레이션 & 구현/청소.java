@@ -1,7 +1,7 @@
 import java.util.*;
 class Solution {
     static int[] dx = {-1, 0, 1, 0};
-    static int[] dy = {0, 1, 0, -1};
+    static int[] dy = {0, 1, 0, -1}; 
 
     public static class Cleaner {
         private int x = 0;

@@ -35,23 +35,23 @@ class Solution {
     }
 
 	public int solution(int[][] board){
-        Moveable dog = new Moveable(0, 0), hyunsu = new Moveable(0, 0);
-        for(int i = 0; i < 10; ++i) {
-            for(int j = 0; j < 10; ++j) {
-                if(board[i][j] == 2) hyunsu = new Moveable(i, j);
-                if(board[i][j] == 3) dog = new Moveable(i, j);
-            }
-        }
-
-        for(int i = 0; i <= 10000; ++i) {
-            int[] hP = hyunsu.getPosition();
-            int[] dP = dog.getPosition();
-
-            if(hP[0] == dP[0] && hP[1] == dP[1]) return i;
-
-            hyunsu.move(board);
-            dog.move(board);
-        }
+	        Moveable dog = new Moveable(0, 0), hyunsu = new Moveable(0, 0);
+	        for(int i = 0; i < 10; ++i) {
+	            for(int j = 0; j < 10; ++j) {
+	                if(board[i][j] == 2) hyunsu = new Moveable(i, j);
+	                if(board[i][j] == 3) dog = new Moveable(i, j);
+	            }
+	        }
+	
+	        for(int i = 0; i <= 10000; ++i) {
+	            int[] hP = hyunsu.getPosition();
+	            int[] dP = dog.getPosition();
+	
+	            if(hP[0] == dP[0] && hP[1] == dP[1]) return i;
+	
+	            hyunsu.move(board);
+	            dog.move(board);
+	        }
         
 		
 		return 0;		

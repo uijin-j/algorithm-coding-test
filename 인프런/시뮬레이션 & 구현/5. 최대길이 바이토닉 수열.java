@@ -3,37 +3,37 @@ import java.util.*;
 class Solution {
 	public int solution(int[] nums){
 		int answer = 0;
-        int n = nums.length;
-        List<Integer> peeks = new ArrayList<>();
+        	int n = nums.length;
+        	List<Integer> peeks = new ArrayList<>();
 
-        for(int i = 1; i < n - 1; ++i) { // 후보 찾기
-            int num = nums[i];
-            if(num > nums[i-1] && num > nums[i+1]) {
-                peeks.add(i);
-            }
-        }
+	        for(int i = 1; i < n - 1; ++i) { // 후보 찾기
+	            int num = nums[i];
+	            if(num > nums[i-1] && num > nums[i+1]) {
+	                peeks.add(i);
+	            }
+	        }
 
-        for(int peek: peeks) {
-            int left = peek - 1, right = peek + 1;
-            int num = nums[peek];
-            int lL = 0, rL = 0;
-            while(left >= 0) {
-                if(nums[left] >= num) break;
-                num = nums[left];
-                ++lL;
-                --left;
-            }
-        
-            num = nums[peek];
-            while(right < n) {
-                if(nums[right] >= num) break;
-                num = nums[right];
-                ++rL;
-                ++right;
-            }
-
-            answer = Math.max(answer, lL + rL + 1);
-         }
+	        for(int peek: peeks) {
+	            int left = peek - 1, right = peek + 1;
+	            int num = nums[peek];
+	            int lL = 0, rL = 0;
+	            while(left >= 0) {
+	                if(nums[left] >= num) break;
+	                num = nums[left];
+	                ++lL;
+	                --left;
+	            }
+	        
+	            num = nums[peek];
+	            while(right < n) {
+	                if(nums[right] >= num) break;
+	                num = nums[right];
+	                ++rL;
+	                ++right;
+	            }
+	
+	            answer = Math.max(answer, lL + rL + 1);
+	         }
 
 
 		return answer;	

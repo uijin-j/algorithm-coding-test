@@ -2,17 +2,17 @@ import java.util.*;
 class Solution {
 	public int[] solution(String s){
 		int[] answer = new int[5];
-        int[] count = new int[5]; // 빈도수 저장
-        int max = 0;
+        	int[] count = new int[5]; // 빈도수 저장
+        	int max = 0;
 
-        for(char c : s.toCharArray()) {
-            count[c - 'a'] += 1;
-            max = Math.max(max, count[c - 'a']);
-        }
-
-        for(int i = 0; i < 5; ++i) {
-            answer[i] = max - count[i];
-        }
+	        for(char c : s.toCharArray()) {
+	            count[c - 'a'] += 1;
+	            max = Math.max(max, count[c - 'a']);
+	        }
+	
+	        for(int i = 0; i < 5; ++i) {
+	            answer[i] = max - count[i];
+	        }
 		
 		return answer;
 	}

@@ -3,10 +3,10 @@ import java.util.*;
 
 public class Main
 {
-	/**
-	 *  1 <= n <= 1_000_000
-	 *  1 <= k <= 100_000
-	 */
+    /**
+     *  1 <= n <= 1_000_000
+     *  1 <= k <= 100_000
+     */
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(bf.readLine());

@@ -23,9 +23,7 @@ public class Main
 		      max = Math.max(max, times[i]);
 		  }
 		  
-		  Arrays.sort(times);
-		  
-		  long lt = 0;
+		  long lt = 1;
 		  long rt = max * m;
 	      long answer = rt;
 		  while(lt <= rt) {

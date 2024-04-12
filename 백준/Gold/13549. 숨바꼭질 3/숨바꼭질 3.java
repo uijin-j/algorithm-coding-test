@@ -17,7 +17,7 @@ public class Main
         StringTokenizer st = new StringTokenizer(bf.readLine());
         int n = Integer.parseInt(st.nextToken());
         int k = Integer.parseInt(st.nextToken());
-        boolean[] visited = new boolean[100_001];
+        int[] visited = new int[100_001];
         
         if(n == k) {
             System.out.println(0);
@@ -25,18 +25,31 @@ public class Main
         }
         
         Queue<Node> q = new LinkedList<>();
-        q.offer(new Node(n, 0));
+        q.offer(new Node(n, 1));
+        visited[n] = 1;
         int min = Integer.MAX_VALUE;
         while(!q.isEmpty()) {
             Node node = q.poll();
-            visited[node.x] = true;
-            if(node.x == k) min = Math.min(min, node.count);
             
-            if(node.x != 100_000 && !visited[node.x + 1]) q.add(new Node(node.x + 1, node.count + 1));
-            if(node.x != 0 &&!visited[node.x - 1]) q.add(new Node(node.x - 1, node.count + 1));
-            if(node.x * 2 <= 100_000 && !visited[node.x * 2]) q.add(new Node(node.x * 2, node.count));
+            if(node.x != 100_000 && (visited[node.x + 1] == 0 || node.count + 1 < visited[node.x + 1])) {
+                q.add(new Node(node.x + 1, node.count + 1));
+                visited[node.x + 1] = node.count + 1;
+                if(node.x + 1 == k) min = Math.min(min, node.count + 1);
+            }
+            
+            if(node.x != 0 && (visited[node.x - 1] == 0 || node.count + 1 < visited[node.x - 1])) {
+                q.add(new Node(node.x - 1, node.count + 1));
+                visited[node.x - 1] = node.count + 1;
+                if(node.x - 1 == k) min = Math.min(min, node.count + 1);
+            }
+            
+            if(node.x * 2 <= 100_000 && (visited[node.x * 2] == 0 || node.count < visited[node.x * 2])) {
+                q.add(new Node(node.x * 2, node.count));
+                visited[node.x * 2] = node.count;
+                if(node.x * 2 == k) min = Math.min(min, node.count);
+            }
         }
         
-        System.out.println(min);
+        System.out.println(min - 1);
     }
 }

@@ -2,8 +2,6 @@ import java.io.*;
 
 public class Main
 {
-	// 1부터 k까지 합 = (k + 1) / 2 * k
-	// 즉, k번 밟기 위해서는 최소 (k + 1) / 2 * k 가 n이하여야 함!
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
@@ -12,7 +10,7 @@ public class Main
 		while(t > 0) {
 		    long n = Long.parseLong(bf.readLine());
 		    long left = 1;
-		    long right = Integer.MAX_VALUE;
+		    long right = (long) Math.sqrt(2 * n);
 		    long answer = 1;
 
 		    while(left <= right) {

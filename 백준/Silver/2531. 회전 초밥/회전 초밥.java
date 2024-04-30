@@ -1,60 +1,46 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Main {
-	static StringTokenizer st;
-	static StringBuilder sb=new StringBuilder();
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		st=new StringTokenizer(br.readLine());
-		int N = Integer.parseInt(st.nextToken());
-		int d = Integer.parseInt(st.nextToken());
-		int k = Integer.parseInt(st.nextToken());
-		int c = Integer.parseInt(st.nextToken());
-		
-		int[] list=new int[N+k-1];
-		for (int i = 0; i < N; i++) {
-			list[i]=Integer.parseInt(br.readLine());
-		}// 입력완료
-		
-		for (int i = 0; i < k-1; i++) {
-			list[N++]=list[i];
+public class Main
+{
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(bf.readLine());
+		int n = Integer.parseInt(st.nextToken()); // 벨트에 놓은 접시의 수
+		int d = Integer.parseInt(st.nextToken()); // 초밥의 가짓수
+		int k = Integer.parseInt(st.nextToken()); // 연속해서 먹는 접시의 수
+		int c = Integer.parseInt(st.nextToken()); // 쿠폰 번호
+		int[] belt = new int[2*n];
+
+		for(int i = 0; i < n; ++i) {
+			int sushi = Integer.parseInt(bf.readLine());
+			belt[i] = sushi;
+			belt[n+i] = sushi;
 		}
 
-		int[] eaten=new int[d+1];
-		int max=1; // 쿠폰 먹었다고 치자
-		eaten[c]+=1;
-		
-		// 처음 
-		int start=0;
-		for (int i = start; i < k; i++) {
-			if(eaten[list[i]]==0) {
-				max++;
-			}
-			eaten[list[i]]+=1;
+		int[] ate = new int[d+1];
+		int answer = 1;
+		ate[c] += 1; // 쿠폰으로 먹기
+		for(int i = 0; i < k; ++i) { // 0번째 초밥부터 k개를 먹는다.
+			int sushi = belt[i];
+			if(ate[sushi] == 0) ++answer;
+			ate[sushi] += 1;
 		}
-		
-		// 윈도우 이동
-		start=0;
-		int end=k;
-		
-		int result=max;
-		for (int i = end; i < list.length; i++) {
-			eaten[list[start]]-=1;
-            // 삭제된 초밥 개수는 무조건 빼는 것 X, 현재 윈도우 안에 삭제된 초밥이 있다면, 빼지 않아도 됨
-			if(eaten[list[start]]==0) {
-				result-=1;
-			} // 전처리
-			// 추가된거 처리
-			if(eaten[list[i]]==0) result+=1;
-			eaten[list[i]]+=1;
-			max=Math.max(max, result);
-			start++;
+
+		int left = 0, ateSushi = answer; // n-2 -> (n-2) + k
+		for(int right = k; right < n+k-1; ++right) {
+			int subtract = belt[left];
+			ate[subtract] -= 1;
+			if(ate[subtract] == 0) ateSushi -= 1;
+
+			int add = belt[right];
+			if(ate[add] == 0) ateSushi += 1;
+			ate[add] += 1;
+
+			answer = Math.max(answer, ateSushi);
+			++left;
 		}
-		
-		System.out.println(max);
-	}
+
+		System.out.println(answer);
+    }
 }

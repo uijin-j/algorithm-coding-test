@@ -12,37 +12,36 @@ class Solution {
         map.put('D', 2);
         map.put('L', 3);
         
-        int[] position = { 0, 0 };
+        int[] point = { 0, 0 };
         for(char dir : dirs.toCharArray()) {
-            position = move(map.get(dir), position);
+            point = move(map.get(dir), point);
         }
         
         return count;
     }
     
-    public int[] move(int dir, int[] position) {
-        int x = position[0];
-        int y = position[1];
+    public int[] move(int dir, int[] point) {
+        int x = point[0];
+        int y = point[1];
         int nx = x + dx[dir];
         int ny = y + dy[dir];
         
         if(nx >= -5 && nx <= 5 && ny >= -5 && ny <= 5) {
-            int tx = x < 0 ? Math.abs(x) + 5 : x;
-            int ty = y < 0 ? Math.abs(y) + 5 : y;
-            int tnx = nx < 0 ? Math.abs(nx) + 5 : nx;
-            int tny = ny < 0 ? Math.abs(ny) + 5 : ny;
-            
-            if(!visit[tx][ty][tnx][tny]) {
+            if(!visit[convert(x)][convert(y)][convert(nx)][convert(ny)]) {
                 count++;
-                visit[tx][ty][tnx][tny] = true;
-                visit[tnx][tny][tx][ty] = true;
+                visit[convert(x)][convert(y)][convert(nx)][convert(ny)] = true;
+                visit[convert(nx)][convert(ny)][convert(x)][convert(y)] = true;
                 return new int[]{ nx, ny };
             }
             
             return new int[]{ nx, ny };
         }
         
-        return position;
+        return point;
+    }
+    
+    public int convert(int coordinate) {
+        return coordinate >= 0 ? coordinate : Math.abs(coordinate) + 5;
     }
     
     

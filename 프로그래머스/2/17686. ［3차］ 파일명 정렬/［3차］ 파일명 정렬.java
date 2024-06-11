@@ -3,7 +3,6 @@ import java.util.regex.*;
 
 class Solution {
     Pattern pattern;
-    
     public class File {
         String name;
         String head;
@@ -12,9 +11,9 @@ class Solution {
         
         public File(String name, int order) {
             String[] parsed = parse(name);
-            this.name = name;
             this.head = parsed[0].toUpperCase();
             this.number = Integer.parseInt(parsed[1]);
+            this.name = name;
             this.order = order;
         }
         

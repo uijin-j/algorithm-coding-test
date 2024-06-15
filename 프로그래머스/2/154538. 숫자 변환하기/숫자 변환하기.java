@@ -4,7 +4,7 @@ class Solution {
     public int solution(int x, int y, int n) {
         if(x == y) return 0;
         
-        int[] dp = new int[y + 1];
+        int[] dp = new int[y + 1]; // dp[i]
         Arrays.fill(dp, y + 1);
         dp[x] = 0;
         for(int i = x; i < y + 1; ++i) {

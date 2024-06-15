@@ -13,12 +13,12 @@ class Solution {
         
         do {
             check = new boolean[m][n];    
-        } while(mark4(m, n, charBoard));
+        } while(remove4(m, n, charBoard));
         
         return count;
     }
     
-    public boolean mark4(int m, int n, char[][] board) {
+    public boolean remove4(int m, int n, char[][] board) {
         boolean answer = false;
         for(int i = 0; i < m; ++i) {
             for(int j = 0; j < n; ++j) {

@@ -2,7 +2,7 @@ class Solution {
     public int[] solution(int[][] arr) {
         int[] answer = new int[2];
         
-        String result = compress(arr, 0, 0, arr.length);
+        String result = compress(arr, 0, 0, arr.length); 
         for(char ch : result.toCharArray()) {
             if(ch == '0') answer[0]++;
             else answer[1]++;

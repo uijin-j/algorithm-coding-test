@@ -6,15 +6,13 @@ class Solution {
         Queue<Integer> q1 = new LinkedList<>();
         Queue<Integer> q2 = new LinkedList<>();
     
-        long totoal = 0, sum1 = 0, sum2 = 0;
+        long sum1 = 0, sum2 = 0;
         for(int i = 0; i < n; ++i) {
             // Q1
-            totoal += queue1[i];
             sum1 += queue1[i];
             q1.offer(queue1[i]);
             
             // Q2
-            totoal += queue2[i];
             sum2 += queue2[i];
             q2.offer(queue2[i]);
         }

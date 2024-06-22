@@ -17,7 +17,6 @@ class Solution {
             visited[wire[0]] = true;
             int connection = dfs(wire[0], wire, list);
             min = Math.min(min, Math.abs(n - connection - connection));
-            System.out.println();
         }
         
         return min;

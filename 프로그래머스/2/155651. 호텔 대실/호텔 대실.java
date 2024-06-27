@@ -1,6 +1,13 @@
 import java.util.*;
 import java.time.*;
 
+/**
+ * 풀이 1) PQ를 활용하는 대표적인 문제인, 회의실 배정 문제와 비슷하다고 생각!
+ * 주의사항) 끝나는 시간에서 청소 시간 10분을 처리해 줘야 함! (끝나는 시간이 오후 11시 50분 이후이면 10분을 더했을 때, 다음 날이 되는 것에 주의!)
+ *  - LocalTime은 java.time.* 를 import 해야함
+ *  - LocalTime의 of(hour, minute), isAfter(localTime), isBefore(localTime), plusMinutes(minutes) 활용법 기억하기!
+ */
+
 class Solution {
     // 회의실 문제와 유사 PQ
     public class Room {

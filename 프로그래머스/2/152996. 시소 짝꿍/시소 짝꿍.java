@@ -6,6 +6,12 @@ import java.util.*;
  * 주의사항) 모든 사람이 같은 몸무게를 가질 경우, 경우의 수를 구할 때 int 범위를 넘길 수도 있음! (long)으로 변환해주기!
  */
 
+ /**
+  *  a * 4 = b * 2
+  *  a * 4 = b * 3
+  *  a * 3 = b * 2
+  */
+
 class Solution {
     public long solution(int[] weights) {
         long[] counter = new long[1001];

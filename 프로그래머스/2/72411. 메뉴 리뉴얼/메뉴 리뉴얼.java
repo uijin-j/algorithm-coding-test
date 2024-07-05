@@ -19,9 +19,7 @@ class Solution {
             for(char ch : chars) sorted.append(ch);
             String sortedOrder = sorted.toString();
             
-            // System.out.println("====== " + sortedOrder + " ======");
             for(int i = 2; i <= sortedOrder.length(); ++i) {
-                // System.out.println(i + "개");
                 // order.length()개 중에서 i개를 선택
                 selected = new StringBuilder();
                 combi(0, 0, i, sortedOrder, map);
@@ -65,7 +63,6 @@ class Solution {
     
     public void combi(int start, int cnt, int target, String order, Map<String, Integer> map) {
         if(cnt == target) {
-            // System.out.println(selected.toString());
             map.put(selected.toString(), map.getOrDefault(selected.toString(), 0) + 1);
             return;
         }

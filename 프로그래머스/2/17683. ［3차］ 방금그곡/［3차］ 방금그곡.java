@@ -24,26 +24,20 @@ class Solution {
         int order = 0;
         for(String musicinfo : musicinfos) {
             String[] info = musicinfo.split(",");
-            String[] startAt = info[0].split(":");
-            String[] endAt = info[1].split(":");
-            int hour = Integer.parseInt(endAt[0]) - Integer.parseInt(startAt[0]);
-            int minute = Integer.parseInt(endAt[1]) - Integer.parseInt(startAt[1]);
-            if(minute < 0) {
-                minute = 60 + minute;
-                hour -= 1;
-            }
-            int duration = hour * 60 + minute;
+            int duration = calculateDuration(info[0], info[1]);
             String name = info[2];
             String music = convert(info[3]);
             int musicLength = music.length();
-            int neededTime = duration;
+            int neededTime = duration; // 음악을 더 재생해야 되는 시간
+            
             StringBuilder playedMusic = new StringBuilder();
-            while(neededTime >= musicLength) {
+            while(neededTime >= musicLength) { // 한 곡 전체를 재생할 수 있다면, 계속 재생
                 playedMusic.append(music);
                 neededTime -= musicLength;
             }
             
             playedMusic.append(music.substring(0, neededTime));
+            
             if(playedMusic.toString().contains(m)) {
                 pq.offer(new Music(duration, order, name));
             }
@@ -55,13 +49,32 @@ class Solution {
     }
     
     public String convert(String melody) {
-        melody = melody.replaceAll("C#", "c");
-        melody = melody.replaceAll("D#", "d");
-        melody = melody.replaceAll("F#", "f");
-        melody = melody.replaceAll("G#", "g");
-        melody = melody.replaceAll("A#", "a");
-        melody = melody.replaceAll("B#", "b");
+        StringBuilder sb = new StringBuilder();
+        int diff = 'A' - 'a';
+        for(int i = 0; i < melody.length(); ++i) {
+            if(i+1 < melody.length() && melody.charAt(i+1) == '#') {
+                sb.append(String.valueOf((char) (melody.charAt(i) - diff)));
+                ++i;
+                continue;
+            }
+            
+            sb.append(String.valueOf(melody.charAt(i)));
+        }
         
-        return melody;
+        return sb.toString();
+    }
+    
+    public int calculateDuration(String startAt, String endAt) {
+        String[] startTime = startAt.split(":");
+        String[] endTime = endAt.split(":");
+        int hour = Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0]);
+        int minute = Integer.parseInt(endTime[1]) - Integer.parseInt(startTime[1]);
+        
+        if(minute < 0) {
+            minute = 60 + minute;
+            hour -= 1;
+        }
+        
+        return hour * 60 + minute;
     }
 }

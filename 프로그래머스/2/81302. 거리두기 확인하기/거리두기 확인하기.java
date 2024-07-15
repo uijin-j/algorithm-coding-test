@@ -16,6 +16,7 @@ class Solution {
                     if(position == 'P') {
                         boolean[] check = new boolean[4];
                         
+                        // 상하좌우 check!
                         for(int i = 0; i < 4; ++i) {
                             int nx = x + dx[i];
                             int ny = y + dy[i];
@@ -30,6 +31,7 @@ class Solution {
                             }
                         }
                         
+                        // 2칸뒤 상하좌우 check!
                         for(int i = 0; i < 4; ++i) {
                             int nx = x + dx[i] * 2;
                             int ny = y + dy[i] * 2;
@@ -40,20 +42,21 @@ class Solution {
                             }
                         }
                         
+                        // 대각선 check!
                         for(int i = 4; i < 8; ++i) {
                             int nx = x + dx[i];
                             int ny = y + dy[i];
                             
-                            int before = i-4;
-                            int after = (i-3 == 4) ? 0 : i-3;
+                            int before = i-4; // 반시계 방향으로 만나는 칸
+                            int after = (i-3 == 4) ? 0 : i-3; // 시계 방향으로 만나는 칸
                             if(nx >= 0 && nx < 5 && ny >= 0 && ny < 5 && place[nx].charAt(ny) == 'P' && (!check[before] || !check[after])) {
                                 isValid = false;
                                 break;
                             }
-                        }
-                        
-                        if(!isValid) break;
+                        } 
                     }
+                    
+                    if(!isValid) break;
                 }
                 
                 if(!isValid) break;

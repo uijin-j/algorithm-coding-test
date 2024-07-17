@@ -1,4 +1,5 @@
 class Solution {
+    // 누적합? dp!
     public int solution(int [][]board) {
         int answer = 0;
         int[][] dp = new int[board.length + 1][board[0].length + 1];

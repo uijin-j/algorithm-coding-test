@@ -23,9 +23,9 @@ class Solution {
         int[] enemys = new int[round];
         for(int i = 0; i < round; ++i) enemys[i] = enemy[i];
         
-        Arrays.sort(enemys);
+        Arrays.sort(enemys); // 4 2 4 5 -> 2 (4 4 5)
         
-        long sum = 0;
+        long sum = 0; // 숫자가 큰데, sum을 한다면 범위에 주의하기!
         for(int i = 0; i < round - k; ++i) {
             sum += enemys[i];
         }

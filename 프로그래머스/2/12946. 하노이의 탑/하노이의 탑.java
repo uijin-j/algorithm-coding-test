@@ -15,14 +15,14 @@ class Solution {
         return answer;
     }
     
-    public void hanoi(int n, int from, int to, int remain) {
+    public void hanoi(int n, int from, int to, int remainder) {
         if(n == 1) {
             way.add(new int[]{from, to});
             return;
         }
         
-        hanoi(n-1, from, remain, to);
-        hanoi(1, from, to, remain);
-        hanoi(n-1, remain, to, from);
+        hanoi(n-1, from, remainder, to);
+        hanoi(1, from, to, remainder);
+        hanoi(n-1, remainder, to, from);
     }
 }

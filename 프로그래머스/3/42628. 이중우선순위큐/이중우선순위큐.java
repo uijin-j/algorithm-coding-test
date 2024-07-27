@@ -2,8 +2,8 @@ import java.util.*;
 
 class Solution {
     public class DoublePriorityQueue {
-        private PriorityQueue<Integer> asc;
-        private PriorityQueue<Integer> desc;
+        private PriorityQueue<Integer> asc; // 증가 (작은 것부터)
+        private PriorityQueue<Integer> desc; // 감소 (큰 것부터)
         
         public DoublePriorityQueue() {
             this.asc = new PriorityQueue<>((a, b) -> a - b);

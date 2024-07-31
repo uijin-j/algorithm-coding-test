@@ -5,7 +5,7 @@ class Solution {
         // [n, m]까지 가는 방법 => [n-1, m]까지 가는 방법 + [n, m-1]까지 가는 방법
         boolean[][] blocked = new boolean[n+1][m+1];
         for(int[] puddle : puddles) {
-            blocked[puddle[1]][puddle[0]] = true;
+            blocked[puddle[1]][puddle[0]] = true; // 행/열 반대 주의!
         }
         
         int[][] dp = new int[n+1][m+1];
@@ -20,6 +20,6 @@ class Solution {
             }
         }
         
-        return dp[n][m]  % 1_000_000_007;
+        return dp[n][m];
     }
 }

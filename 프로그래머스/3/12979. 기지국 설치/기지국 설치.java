@@ -12,7 +12,7 @@ class Solution {
             // toCover 부터 begin-1까지 커버해야 함!
             if(toCover < begin) {
                 int gap = begin - toCover;
-                answer += gap / range + (((gap % range) > 0) ? 1 : 0);
+                answer += gap / range + (((gap % range) > 0) ? 1 : 0); // ❗️ 요부분에 괄호 확실히 넣어주기!
             }
             
             toCover = end + 1;

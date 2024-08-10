@@ -1,36 +1,44 @@
 import java.util.*;
 
 class Solution {
-    List<String> paths = new ArrayList<>();
+    // ❗️ 리스트를 가지고 있는 리스트를 정렬해야 한다면, 리스트를 String으로 변환해서 정렬하기! 
+    PriorityQueue<String> results;
+    Map<String, List<Integer>> map;
     boolean[] check;
-    int n;
-    
-    public void dfs(int l, String from, String path, String[][] tickets) {
-        if(l == n) {
-            paths.add(path);
-            return;
-        }
+    public String[] solution(String[][] tickets) {
+        int n = tickets.length;
+        
+        results = new PriorityQueue<>((a, b) -> a.compareTo(b));
+        map = new HashMap<>();
+        check = new boolean[n];
         
         for(int i = 0; i < n; ++i) {
             String[] ticket = tickets[i];
-            if(ticket[0].equals(from) && !check[i]) {
-                check[i] = true;
-                String to = ticket[1];
-                dfs(l+1, to, path + " " + to, tickets);
-                check[i] = false;
-            }
+            String from = ticket[0];
+            
+            List<Integer> list = map.getOrDefault(from, new ArrayList<>());
+            list.add(i);
+            map.put(from, list);
         }
+
+        dfs("ICN", 0, n, tickets, "ICN");
+        
+        return results.isEmpty() ? new String[]{} : results.poll().split(" ");
     }
     
-    
-    public String[] solution(String[][] tickets) {
-        n = tickets.length;
-        check = new boolean[n];
+    public void dfs(String from, int level, int goal, String[][] tickets, String path) {
+        if(level == goal) {
+            results.add(path);
+            return;
+        }
         
-        dfs(0, "ICN", "ICN", tickets);
-        
-        Collections.sort(paths);
-        
-        return paths.get(0).split(" ");
+        for(int num : map.getOrDefault(from, new ArrayList<>())) {
+            if(!check[num]) {
+                String to = tickets[num][1];
+                check[num] = true;
+                dfs(to, level+1, goal, tickets, path + " " + to);
+                check[num] = false;
+            }
+        }
     }
 }

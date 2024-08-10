@@ -1,40 +1,30 @@
 import java.util.*;
 
 class Solution {
-    static class Job {
-        int requiredAt, cost; // 작업 요청 시간, 작업 소요 시간
-        
-        public Job(int requiredAt, int cost) {
-            this.requiredAt = requiredAt;
-            this.cost = cost;
-        }
-    }
-    
+    // 최대한 적게 기다리도록 해야 함
     public int solution(int[][] jobs) {
-        int sum = 0; // 작업 요청 후 소요 시간 합
-        int currentTime = 0;
-        int countOfProcessed = 0; // 처리된 작업 수
-        int next = 0; // 다음에 큐에 들어갈 작업
+        int n = jobs.length;
         
-        Arrays.sort(jobs, (a, b) -> a[0] - b[0]); // 시간 순으로 정렬
-        PriorityQueue<Job> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost); // 작업큐
-    
-        while(countOfProcessed < jobs.length) {
-            while(next < jobs.length && jobs[next][0] <= currentTime) {
-                pq.offer(new Job(jobs[next][0], jobs[next][1]));
-                next++;
+        Arrays.sort(jobs, (a, b) -> a[0] - b[0] == 0 ? a[1] - b[1] : a[0] - b[0]);
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        int t = 0;
+        int idx = 0;
+        int sum = 0;
+        while(idx < n || !pq.isEmpty()) {
+            if(pq.isEmpty() && t < jobs[idx][0]) {
+                t = jobs[idx][0]; 
             }
             
-            if(pq.isEmpty()) {
-                currentTime = jobs[next][0];
-            } else {
-                Job job = pq.poll();
-                currentTime += job.cost; // 작업 수행
-                sum += currentTime - job.requiredAt;  
-                countOfProcessed++;
+            while(idx < n && jobs[idx][0] <= t) {
+                pq.offer(jobs[idx++]);
             }
+            
+            int[] job = pq.poll();
+            t += job[1];
+            sum += t - job[0];
         }
         
-        return sum / jobs.length;
+        return sum / n;
     }
 }

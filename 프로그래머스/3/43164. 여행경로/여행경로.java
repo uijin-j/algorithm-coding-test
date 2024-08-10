@@ -1,44 +1,55 @@
 import java.util.*;
+import java.util.Collectors.*;
 
 class Solution {
-    // ❗️ 리스트를 가지고 있는 리스트를 정렬해야 한다면, 리스트를 String으로 변환해서 정렬하기! 
-    PriorityQueue<String> results;
-    Map<String, List<Integer>> map;
-    boolean[] check;
+    // dfs로 풀면 되겠다!
+    Map<String, List<String>> map;
+    List<String> route;
+    String[] answer;
+    boolean flag;
     public String[] solution(String[][] tickets) {
         int n = tickets.length;
-        
-        results = new PriorityQueue<>((a, b) -> a.compareTo(b));
         map = new HashMap<>();
-        check = new boolean[n];
         
-        for(int i = 0; i < n; ++i) {
-            String[] ticket = tickets[i];
-            String from = ticket[0];
-            
-            List<Integer> list = map.getOrDefault(from, new ArrayList<>());
-            list.add(i);
-            map.put(from, list);
+        for(String[] ticket : tickets) {
+            map.putIfAbsent(ticket[0], new ArrayList<>());
+            map.get(ticket[0]).add(ticket[1]);
         }
-
-        dfs("ICN", 0, n, tickets, "ICN");
         
-        return results.isEmpty() ? new String[]{} : results.poll().split(" ");
+        for(String key : map.keySet()) {
+            map.put(key, 
+                    map.get(key)
+                        .stream()
+                        .sorted()
+                        .collect(Collectors.toList())
+                   );
+        }
+        
+        route = new ArrayList<>();
+        route.add("ICN");
+        
+        dfs(0, n);
+        
+        return answer;
     }
     
-    public void dfs(String from, int level, int goal, String[][] tickets, String path) {
+    public void dfs(int level, int goal) {
+        if(flag) return;
         if(level == goal) {
-            results.add(path);
+            answer = new String[route.size()];
+            int idx = 0;
+            for(String r : route) {
+                answer[idx++] = r;
+            }
+
+            flag = true;
             return;
         }
         
-        for(int num : map.getOrDefault(from, new ArrayList<>())) {
-            if(!check[num]) {
-                String to = tickets[num][1];
-                check[num] = true;
-                dfs(to, level+1, goal, tickets, path + " " + to);
-                check[num] = false;
-            }
+        for(String to : map.get(route.get(level))) {
+            route.add(to);
+            dfs(level + 1, goal);
+            route.remove(level + 1);
         }
     }
 }

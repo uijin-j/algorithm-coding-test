@@ -1,6 +1,6 @@
 # [level 3] 산 모양 타일링 - 258705 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/258705?language=java) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/258705) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 09월 06일 02:28:50
+2024년 09월 06일 02:29:22
 
 ### 문제 설명
 

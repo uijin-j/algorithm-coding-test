@@ -1,58 +1,63 @@
 import java.util.*;
 
+// 00:09 START!
+// 그래프 탐색
 class Solution {
-    int[] answer;
-    
     public int[] solution(int[][] edges) {
-        // 1. 생성한 정점 찾기: 들어오는 엣지 X / 나가는 엣지 2개 이상
-        // 2. 생성한 정점이 가르키는 것이 각 그래프
-        // 3. 그래프의 한 점이 주어졌을 때, 어떤 그래프인지 확인하기
-        answer = new int[4];
-        Map<Integer, List<Integer>> out = new HashMap<>(); // out.get(i): i에서 갈 수 있는 노드
-        Map<Integer, List<Integer>> in = new HashMap<>(); // in.get(i): i로 들어오는 노드
+        /**
+         * 💡 생성한 정점은 어떻게 구할까?
+         *  - in이 없고 out만 2개 이상 (*도넛 모양 그래프, 막대 모양 그래프, 8자 모양 그래프의 수의 합은 2이상)
+         *
+         * 💡 모든 그래프의 특징을 정리해보자
+         *  - 도넛 모양 그래프: 모든 정점이 in 1 / out 1 (돌다보면 자신으로 돌아옴)
+         *  - 막대 모양 그래프: 정점이 in 1 / out 1 but 시작 정점은 out 1, 마지막 정점은 in 1 (돌다보면 out이 없는 정점이 있음)
+         *  - 8자 모양 그래프: 모든 정점이 in 1 / out 1 but 중간에 in 2 / out 2 정점이 존재 (돌다보면 in 2 / out 2 정점이 있음)
+         */
+        int[] answer = new int[4];
+        Map<Integer, List<Integer>> gragh = new HashMap<>(); // gragh.get(i): i에서 갈 수 있는 노드
+        int[] inCount = new int[1000001]; // inCount[i]: i로 들어오는 노드 수
+        int[] outCount = new int[1000001]; // outCount[i]: i에서 나가는 노드 수
         for(int[] edge: edges) {
             int from = edge[0];
             int to = edge[1];
             
-            List<Integer> list = out.getOrDefault(from, new ArrayList<>());
+            List<Integer> list = gragh.getOrDefault(from, new ArrayList<>());
             list.add(to);
-            out.put(from, list);
+            gragh.put(from, list);
             
-            list = in.getOrDefault(to, new ArrayList<>());
-            list.add(from);
-            in.put(to, list);
+            outCount[from]++;
+            inCount[to]++;
         }
         
-        // 1. 생성한 정점 찾기: 나가는 엣지 2개 이상 + 들어오는 엣지 X / 
-        for(int key: out.keySet()) {
-            if(out.get(key).size() >= 2 && !in.containsKey(key)) {
-                answer[0] = key;
+        // 1. 생성한 정점 찾기
+        for(int node : gragh.keySet()) {
+            if(inCount[node] == 0 && outCount[node] >= 2) {
+                answer[0] = node;
                 break;
             }
         }
         
-        for(int node : out.get(answer[0])) decideType(node, node, in, out);
+        // 2. 정점이 가르키는 점들이 속한 그래프 종류 구하기
+        for(int node : gragh.getOrDefault(answer[0], new ArrayList<>())) {
+            inCount[node]--;
+            answer[decideType(node, node, gragh, inCount, outCount)]++;
+        }
         
         return answer;
     }
     
-    private void decideType(int node, int first, Map<Integer, List<Integer>> in, Map<Integer, List<Integer>> out) {
-        if(!out.containsKey(node) || !in.containsKey(node)) { // 막대 타입
-            answer[2] += 1;
-            return;
-        }
+    private int decideType(int node, int first, Map<Integer, List<Integer>> gragh, int[] inCount, int[] outCount) {
+        // 막대 타입
+        if(inCount[node] == 0 || outCount[node] == 0) return 2;
+      
+        // 8자 타입
+        if(outCount[node] == 2) return 3;
         
-        if(out.get(node).size() > 1) { // 8자 타입
-            answer[3] += 1;
-            return;
-        }
+        int next = gragh.get(node).get(0);
         
-        int next = out.get(node).get(0);
-        if(next == first) { // 도넛 타입
-            answer[1] += 1;
-            return;
-        }
+        // 도넛 타입
+        if(next == first) return 1;
         
-        decideType(next, first, in, out);
+        return decideType(next, first, gragh, inCount, outCount);
     }
 }

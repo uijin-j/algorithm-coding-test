@@ -1,6 +1,6 @@
 import java.util.*;
 
-// 17:06 START!
+// 17:06 START! 18:48 END! (풀이 참고..)
 class Solution {
     /**
      * 그래프 탐색 (bfs)
@@ -9,6 +9,8 @@ class Solution {
      * 
      * 최단거리를 구한 뒤 상쇄하는 방식은 어떨까? 근데 최단거리를 구한 뒤 상쇄한 방식이 돌아가는 것보다 사전순으로 빠르다고 할 수 있을까?
      * ❗️ 애초에 S, E를 알고 있으니, 최단거리는 알고 있는거나 다름 없음!
+     * 
+     * 💡 그리디처럼 사전순으로 빠른 방향으로 갈 수 있으면, 그 방향으로 가자!
      */
     public String solution(int n, int m, int x, int y, int r, int c, int k) {
         String answer = "";

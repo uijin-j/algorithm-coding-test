@@ -12,14 +12,9 @@ class Solution {
      * 
      */ 
     public int[] solution(long[] numbers) {
-        List<Integer> dp = new ArrayList<>(); // dp[i]: 높이가 i인 포화 이진 트리의 노드 수 (ex. dp[1] = 1, dp[2] = 3, dp[3] = 7 ...)
-        dp.add(0);
-        dp.add(1); // dp[1] = 1
-        int i = 2;
-        while(dp.get(i-1) <= 51) { // 10^15를 2진수로 바꾸면 51자리가 나옴! Long.toBinaryString(10^15)를 활용
-            dp.add(dp.get(i-1) * 2 + 1);
-            i++;
-        }
+        // dp[i]: 높이가 i인 포화 이진 트리의 노드 수 (ex. dp[1] = 1, dp[2] = 3, dp[3] = 7 ...)
+        // 10^15를 2진수로 바꾸면 51자리가 나옴! 그래서 63까지만! (Long.toBinaryString(10^15)를 활용)
+        int[] dp = { 0, 1, 3, 7, 15, 31, 63};
         
         int[] answer = new int[numbers.length];
         int idx = 0;
@@ -27,19 +22,12 @@ class Solution {
             String binary = Long.toBinaryString(num); // num을 2진수로 바꾸기
             int len = binary.length();
             
-            int left = 1, right = dp.size() - 1;
-            while(left <= right) { // 레벨 찾기 (이분탐색)
-                int mid = left + (right - left) / 2;
-                
-                if(dp.get(mid) >= len && dp.get(mid - 1) < len) { 
-                    // level이 mid!
-                    binary = "0".repeat(dp.get(mid) - len) + binary;
-                    answer[idx++] = canConvert(mid, binary) ? 1 : 0;
+            for(int i = 1; i < dp.length; ++i) {
+                if(len <= dp[i] && len > dp[i-1]) {
+                    // level이 i!
+                    binary = "0".repeat(dp[i] - len) + binary;
+                    answer[idx++] = canConvert(i, binary) ? 1 : 0;
                     break;
-                } else if(dp.get(mid) > len) {
-                    right = mid - 1;
-                } else {
-                    left = mid + 1;
                 }
             }
         }

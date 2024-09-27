@@ -1,18 +1,20 @@
 import java.util.*;
 
-// 18:55 START!
+// 18:55 START! 20:41 END! (약 2시간..)
 class Solution {
     /**
      * 이분탐색? X
      * 그리디? 항상 가장 가까운 양(만약 양이 없으면 가장 양과 가까운 늑대)을 데려가다가, 갈 수 없으면 그대로 끝!
-     * 1. 모든 늑대 노드에서 가장 가까운 양까지 거리 구하기 (아래 방향으로만) O(n^2)
+     * 1. 모든 늑대 노드에서 가장 가까운 양까지 거리 구하기 (아래 방향으로만)
      * 2. 루트 노드부터 bfs with 우선순위 큐
+     *
+     * ❗️ 그런데, 단순히 가장 가까운 양으로 하면 안됨! 다음 양이 현재 갈 수 있는 거리 내에 있으면 하위에 양이 더 많은 쪽으로 가는 것이 더 이득!
      */
     public class Node {
         int num;
         int type; // 양은 0, 늑대는 1
         int distToSheep; // 가장 가까운 양까지의 거리
-        int numOfSheep; // 가장 가까운 양의 수
+        int numOfSheep; // 하위에 있는 양의 수
         
         public Node(int num, int type, int dist, int numOfSheep) {
             this.num = num;
@@ -26,13 +28,8 @@ class Solution {
         int n = info.length;
         
         List<List<Integer>> tree = new ArrayList<>();
-        for(int i = 0; i < n; ++i) {
-            tree.add(new ArrayList<>());
-        }
-        
-        for(int[] edge : edges) {
-            tree.get(edge[0]).add(edge[1]);
-        }
+        for(int i = 0; i < n; ++i) tree.add(new ArrayList<>());
+        for(int[] edge : edges) tree.get(edge[0]).add(edge[1]);
         
         Map<Integer, Node> map = new HashMap<>();
         for(int i = 0; i < n; ++i) {
@@ -42,7 +39,6 @@ class Solution {
         }
         
         PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.distToSheep - b.distToSheep);
-        
         pq.offer(map.get(0));
         
         int sheep = 0;
@@ -62,12 +58,8 @@ class Solution {
                pq.offer(pq2.poll());
             }
             
-            if(node.type == 0) {
-                sheep += 1;
-            } else {
-                wolf += 1;
-                if(sheep <= wolf) break;
-            }
+            if(node.type == 0) sheep += 1;
+            else wolf += 1;
             
             for(int next : tree.get(node.num)) {
                 pq.offer(map.get(next));
@@ -77,13 +69,18 @@ class Solution {
         return sheep;
     }
     
+    // bfs!
     public int[] calculateDistAndCount(int start, List<List<Integer>> tree, int[] info) {
-        if(info[start] == 0) return new int[]{0, 1};
-        
         Queue<Integer> q = new LinkedList<>();
         q.offer(start);
         int min = Integer.MAX_VALUE;
         int count = 0;
+        
+        if(info[start] == 0) {
+            min = 0;
+            count = 1;
+        }
+        
         int dist = 1;
         while(!q.isEmpty()) {
             int size = q.size();

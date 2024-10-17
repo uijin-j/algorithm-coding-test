@@ -36,14 +36,6 @@ public class Main
 	static boolean[][] toRemove;
 	static boolean[][] visit;
 	public static boolean hasBomb() {
-	   // System.out.println("Print Snapshot");
-	   // for(int i = 11; i >= 0; --i) {
-	   //     for(int j = 0; j < 6; ++j) {
-	   //         System.out.print(snapshot[j][i] + " ");
-	   //     }
-	   //     System.out.println();
-	   // }
-	    
 	    boolean hasBomb = false;
 	    toRemove = new boolean[6][12]; // 제거해야 하는 뿌요
 	    visit = new boolean[6][12];

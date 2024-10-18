@@ -44,56 +44,16 @@ public class Main
 	    }
 	    
 	    // 상
-	    int[][] next = up(board);
-	   // if(level == 0) {
-    // 	    System.out.println("Step " + level + " UP");
-    // 	    for(int i = 0; i < N; ++i) {
-    // 	        for(int j = 0; j < N; ++j) {
-    // 	            System.out.print(next[i][j] + " ");
-    // 	        }
-    // 	        System.out.println();
-    // 	    }
-	   // }
-	    dfs(level + 1, next);
+	    dfs(level + 1, up(board));
 	    
 	    // 하
-	    next = down(board);
-	   // if(level == 0) {
-	   //     System.out.println("Step " + level + " DOWN");
-    // 	    for(int i = 0; i < N; ++i) {
-    // 	        for(int j = 0; j < N; ++j) {
-    // 	            System.out.print(next[i][j] + " ");
-    // 	        }
-    // 	        System.out.println();
-    // 	    }   
-	   // }
-	    dfs(level + 1, next);
+	    dfs(level + 1, down(board));
 	    
 	    // 좌
-	    next = left(board);
-	   // if(level == 0) {
-    // 	    System.out.println("Step " + level + " LEFT");
-    // 	    for(int i = 0; i < N; ++i) {
-    // 	        for(int j = 0; j < N; ++j) {
-    // 	            System.out.print(next[i][j] + " ");
-    // 	        }
-    // 	        System.out.println();
-    // 	    }
-	   // }
-	    dfs(level + 1, next);
+	    dfs(level + 1, left(board));
 	    
 	    // 우
-	    next = right(board);
-	   // if(level == 0) {
-	   //     System.out.println("Step " + level + " RIGHT");
-    // 	    for(int i = 0; i < N; ++i) {
-    // 	        for(int j = 0; j < N; ++j) {
-    // 	            System.out.print(next[i][j] + " ");
-    // 	        }
-    // 	        System.out.println();
-    // 	    }
-	   // }
-	    dfs(level + 1, next);
+	    dfs(level + 1, right(board));
 	}
 	
 	public static int[][] up(int[][] board) {

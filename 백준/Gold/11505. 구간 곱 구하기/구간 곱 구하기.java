@@ -35,7 +35,6 @@ public class Main
 	        int arg2 = Integer.parseInt(st.nextToken());
 	        
 	        if(cmd == 1) {
-	            nums[arg1] = arg2;
 				update(1, n, 1, arg1, arg2);
 	            continue;
 	        }

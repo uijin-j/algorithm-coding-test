@@ -1,10 +1,10 @@
 import java.io.*;
 import java.util.*;
 
-// 13:05 시작!
+// 13:05 시작! 14:21 끝!
 public class Main
 {
-    // 3번 나오는 애가 순환선과 지선의 경계에 있는 노드
+    // 연결된 역이 1개인 애가 나오면 지선 끝에 있는 노드
     static int n;
     static List<List<Integer>> stations;
     static int[] dist;
@@ -14,9 +14,7 @@ public class Main
 	    BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 	    n = Integer.parseInt(bf.readLine());
 	    stations = new ArrayList<>();
-	    for(int i = 0; i <= n; ++i) {
-	        stations.add(new ArrayList<>());
-	    }
+	    for(int i = 0; i <= n; ++i) stations.add(new ArrayList<>());
 	    
 	    StringTokenizer st;
 	    for(int i = 0; i < n; ++i) {
@@ -45,26 +43,26 @@ public class Main
 	        }
 	    }
 	    
+	    StringBuilder sb = new StringBuilder();
 	    for(int i = 1; i <= n; ++i) {
-	        System.out.print(dist[i] + " ");
+	        sb.append(dist[i]).append(" ");
 	    }
+	    
+	    System.out.print(sb);
 	}
 	
 	public static int search(int station) {
 	    if(dist[station] > 0) return dist[station];
-	    
 	    for(int next : stations.get(station)) {
 	        if(visit[station][next]) continue;
 	        visit[station][next] = true;
 	        visit[next][station] = true;
 	        
 	        if(cycle[next]) return 1;
-	        dist[next] = search(next);
-	        if(dist[next] == -1) {
-	            dist[next] = 0;
-	            continue;
-	        }
 	        
+	        int result = search(next);
+	        if(result == -1) continue;
+	        dist[next] = result;
 	        return dist[next] + 1;
 	    }
 	    
@@ -78,12 +76,7 @@ public class Main
 	        visit[station][next] = true;
 	        visit[next][station] = true;
 	        
-	        if(next == start) {
-	            cycle[station] = true;
-	            return true;
-	        }
-	        
-	        if(check(next, start)) {
+	        if(next == start || check(next, start)) {
 	            cycle[station] = true;
 	            return true;
 	        }

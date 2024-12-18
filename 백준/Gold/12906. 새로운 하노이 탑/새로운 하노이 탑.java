@@ -4,47 +4,42 @@ import java.io.*;
 public class Main {
     static class Hanoi {
         int moveCount = 0;
-        Stack<Character> stickA = new Stack<>();
-        Stack<Character> stickB = new Stack<>();
-        Stack<Character> stickC = new Stack<>();
+        Stack<Character>[] sticks;
 
+        public Hanoi() {
+            this.sticks = new Stack[3];
+            for(int i = 0; i < 3; ++i) sticks[i] = new Stack();
+        }
+        
         public boolean isEmpty(int index){
-            if(index == 0) return stickA.isEmpty();
-            if(index == 1) return stickB.isEmpty();
-            return stickC.isEmpty();
+            return sticks[index].isEmpty();
         }
 
         public void stackClone(Stack<Character> stack1, Stack<Character> stack2, Stack<Character> stack3){
-            stickA = stack1;
-            stickB = stack2;
-            stickC = stack3;
+            sticks[0] = stack1;
+            sticks[1] = stack2;
+            sticks[2] = stack3;
         }
 
         public void put(int index, Character stencil){
-            if (index == 0) stickA.add(stencil);
-            else if(index == 1) stickB.add(stencil);
-            else stickC.add(stencil);
+            sticks[index].add(stencil);
         }
 
         public Character stackPop(int index){
-            if(index == 0) return stickA.pop();
-            if(index == 1) return stickB.pop();
-            return stickC.pop();
+            return sticks[index].pop();
         }
 
-        public String getState(){
-            String state = "";
-            state += SetStencil(stickA);
-            state += SetStencil(stickB);
-            state += SetStencil(stickC);
-            return state;
-        }
-
-        public String SetStencil(Stack<Character> stack){
-            StringBuilder state = new StringBuilder();
-            for (Character character : stack) state.append(character);
-            state.append(" ");
-            return state.toString();
+        public String toString(){
+            StringBuilder result = new StringBuilder();
+            for(int i = 0; i < 3; ++i) {
+                for (char ch : sticks[i]) {
+                    result.append(ch);
+                }
+                
+                result.append(" ");
+            }
+            
+            return result.toString();
         }
     }
     
@@ -54,6 +49,7 @@ public class Main {
     static String goal;
     public static void main(String[] args) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        
         StringTokenizer st;
         for(int i = 0; i < 3; i++) {
             st = new StringTokenizer(bf.readLine());
@@ -79,11 +75,11 @@ public class Main {
     static int bfs(){
         Queue<Hanoi> queue = new LinkedList<>();
         queue.add(init);
-        visited.add(init.getState());
+        visited.add(init.toString());
         
         while(!queue.isEmpty()){
             Hanoi cur = queue.poll();
-            if(cur.getState().equals(goal)) return cur.moveCount;
+            if(cur.toString().equals(goal)) return cur.moveCount;
             
             for(int i = 0; i < 3; i++) {
                 if(cur.isEmpty(i)) continue;
@@ -93,15 +89,15 @@ public class Main {
                     
                     char poped = cur.stackPop(i);
                     cur.put(j, poped);
-                    String state = cur.getState();
+                    String state = cur.toString();
                     if(!visited.contains(state)){
                         visited.add(state);
                         Hanoi tempHanoi = new Hanoi();
-                        tempHanoi.stackClone((Stack<Character>) cur.stickA.clone(), (Stack<Character>) cur.stickB.clone(), (Stack<Character>) cur.stickC.clone());
+                        tempHanoi.stackClone((Stack<Character>) cur.sticks[0].clone(), (Stack<Character>) cur.sticks[1].clone(), (Stack<Character>) cur.sticks[2].clone());
                         tempHanoi.moveCount = cur.moveCount + 1;
                         queue.add(tempHanoi);
                     }
-                    //원판 되돌리기
+
                     cur.put(i, poped);
                     cur.stackPop(j);
                 }

@@ -15,10 +15,12 @@ public class Main {
             return sticks[index].isEmpty();
         }
 
-        public void stackClone(Stack<Character> stack1, Stack<Character> stack2, Stack<Character> stack3){
-            sticks[0] = stack1;
-            sticks[1] = stack2;
-            sticks[2] = stack3;
+        public Hanoi clone() {
+            Hanoi clone = new Hanoi();
+            clone.sticks[0] = (Stack<Character>) sticks[0].clone();
+            clone.sticks[1] = (Stack<Character>) sticks[1].clone();
+            clone.sticks[2] = (Stack<Character>) sticks[2].clone();
+            return clone;
         }
 
         public void put(int index, Character stencil){
@@ -53,7 +55,6 @@ public class Main {
         StringTokenizer st;
         for(int i = 0; i < 3; i++) {
             st = new StringTokenizer(bf.readLine());
-            
             int n = Integer.parseInt(st.nextToken());
             if(n == 0) continue;
             
@@ -92,10 +93,9 @@ public class Main {
                     String state = hanoi.toString();
                     if(!visited.contains(state)){
                         visited.add(state);
-                        Hanoi tempHanoi = new Hanoi();
-                        tempHanoi.stackClone((Stack<Character>) hanoi.sticks[0].clone(), (Stack<Character>) hanoi.sticks[1].clone(), (Stack<Character>) hanoi.sticks[2].clone());
-                        tempHanoi.moveCount = hanoi.moveCount + 1;
-                        queue.add(tempHanoi);
+                        Hanoi clone = hanoi.clone();
+                        clone.moveCount = hanoi.moveCount + 1;
+                        queue.add(clone);
                     }
 
                     hanoi.move(j, i);

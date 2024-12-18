@@ -25,8 +25,8 @@ public class Main {
             sticks[index].add(stencil);
         }
 
-        public Character stackPop(int index){
-            return sticks[index].pop();
+        public void move(int from, int to){
+            sticks[to].push(sticks[from].pop());
         }
 
         public String toString(){
@@ -77,29 +77,28 @@ public class Main {
         queue.add(init);
         visited.add(init.toString());
         
-        while(!queue.isEmpty()){
-            Hanoi cur = queue.poll();
-            if(cur.toString().equals(goal)) return cur.moveCount;
+        while(!queue.isEmpty()) {
+            Hanoi hanoi = queue.poll();
+            if(hanoi.toString().equals(goal)) return hanoi.moveCount;
             
             for(int i = 0; i < 3; i++) {
-                if(cur.isEmpty(i)) continue;
+                if(hanoi.isEmpty(i)) continue;
                 
                 for(int j = 0; j < 3; j++) {
                     if(i == j) continue;
                     
-                    char poped = cur.stackPop(i);
-                    cur.put(j, poped);
-                    String state = cur.toString();
+                    hanoi.move(i, j);
+                    
+                    String state = hanoi.toString();
                     if(!visited.contains(state)){
                         visited.add(state);
                         Hanoi tempHanoi = new Hanoi();
-                        tempHanoi.stackClone((Stack<Character>) cur.sticks[0].clone(), (Stack<Character>) cur.sticks[1].clone(), (Stack<Character>) cur.sticks[2].clone());
-                        tempHanoi.moveCount = cur.moveCount + 1;
+                        tempHanoi.stackClone((Stack<Character>) hanoi.sticks[0].clone(), (Stack<Character>) hanoi.sticks[1].clone(), (Stack<Character>) hanoi.sticks[2].clone());
+                        tempHanoi.moveCount = hanoi.moveCount + 1;
                         queue.add(tempHanoi);
                     }
 
-                    cur.put(i, poped);
-                    cur.stackPop(j);
+                    hanoi.move(j, i);
                 }
             }
         }

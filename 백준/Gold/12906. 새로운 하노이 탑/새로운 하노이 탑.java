@@ -11,16 +11,17 @@ public class Main {
             for(int i = 0; i < 3; ++i) sticks[i] = new Stack();
         }
         
-        public boolean isEmpty(int index){
-            return sticks[index].isEmpty();
-        }
-
         public Hanoi clone() {
             Hanoi clone = new Hanoi();
             clone.sticks[0] = (Stack<Character>) sticks[0].clone();
             clone.sticks[1] = (Stack<Character>) sticks[1].clone();
             clone.sticks[2] = (Stack<Character>) sticks[2].clone();
+            clone.moveCount = moveCount + 1;
             return clone;
+        }
+        
+        public boolean isEmpty(int index){
+            return sticks[index].isEmpty();
         }
 
         public void put(int index, Character stencil){
@@ -94,7 +95,6 @@ public class Main {
                     if(!visited.contains(state)){
                         visited.add(state);
                         Hanoi clone = hanoi.clone();
-                        clone.moveCount = hanoi.moveCount + 1;
                         queue.add(clone);
                     }
 

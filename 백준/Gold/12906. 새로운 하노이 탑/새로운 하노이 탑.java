@@ -2,52 +2,51 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-	//하노이 상태 관련 클래스
-    static class hanoiInfo{
+    static class Hanoi {
         int count = 0;		//원판 이동 횟수
-        Stack<Character> A = new Stack<>();		//막대 A
-        Stack<Character> B = new Stack<>();		//막대 B
-        Stack<Character> C = new Stack<>();		//막대 C
+        Stack<Character> stickA = new Stack<>();		//막대 A
+        Stack<Character> stickB = new Stack<>();		//막대 B
+        Stack<Character> stickC = new Stack<>();		//막대 C
         //해당 막대 비어있는지 확인
         public boolean emptyCheck(int index){
-            if(index==0){
-                return A.isEmpty();
-            }else if(index==1){
-                return B.isEmpty();
-            }else{
-                return C.isEmpty();
+            if(index == 0){
+                return stickA.isEmpty();
+            } else if(index == 1){
+                return stickB.isEmpty();
+            } else{
+                return stickC.isEmpty();
             }
         }
         //막대기 상태 복사하기
         public void stackClone(Stack<Character> stack1, Stack<Character> stack2, Stack<Character> stack3){
-            A = stack1;
-            B = stack2;
-            C = stack3;
+            stickA = stack1;
+            stickB = stack2;
+            stickC = stack3;
         }
         //막대기에 원판 저장하기
         public void stackAdd(int index, Character stencil){
             if (index==0)
-                A.add(stencil);
+                stickA.add(stencil);
             else if(index==1)
-                B.add(stencil);
+                stickB.add(stencil);
             else
-                C.add(stencil);
+                stickC.add(stencil);
         }
         //막대기에 원판 빼기
         public Character stackPop(int index){
             if(index==0)
-                return A.pop();
+                return stickA.pop();
             else if(index==1)
-                return B.pop();
+                return stickB.pop();
             else
-                return C.pop();
+                return stickC.pop();
         }
         //현재 막대기 상태 코드 구하기
         public String getState(){
             String state = "";
-            state += SetStencil(A);
-            state += SetStencil(B);
-            state += SetStencil(C);
+            state += SetStencil(stickA);
+            state += SetStencil(stickB);
+            state += SetStencil(stickC);
             return state;
         }
         //막대기 원판에 대한 정보 얻기
@@ -60,67 +59,55 @@ public class Main {
         }
     }
     static HashSet<String> visited = new HashSet<>();
-    static hanoiInfo basic = new hanoiInfo();	//초기 막대기 상태
-    //초기 원판 A,B,C 개수, 최소 이동 횟수 저장 변수
-    static int aCount, bCount, cCount, answer;
-    static String answerCode;	//정답이 되는 상태 코드 저장 변수
+    static Hanoi basic = new Hanoi();
+    static int numOfA, numOfB, numOfC, answer;
+    static String goal;
     public static void main(String[] args) throws IOException {
-        //입력값 처리하는 BufferedReader
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        //결과값 출력하는 BufferedWriter
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
-        //초기 하노이 상태 저장
         for(int i=0;i<3;i++){
-            st = new StringTokenizer(br.readLine()," ");
+            st = new StringTokenizer(bf.readLine()," ");
             int n = Integer.parseInt(st.nextToken());
-            if(n==0)
-                continue;
+            if(n == 0) continue;
             String stencil = st.nextToken();
-            for(int j=0;j<n;j++){
-                char temp = stencil.charAt(j);
-                if(temp=='A')	//원판 A일 때
-                    aCount++;
-                else if(temp =='B')	//원판 B일 때
-                    bCount++;
-                else if(temp == 'C')	//원판 C일 때
-                    cCount++;
-                basic.stackAdd(i, temp);	//막대기에 원판 저장하기
+            for(char ch : stencil.toCharArray()){
+                if(ch == 'A') numOfA++;
+                else if(ch =='B') numOfB++;
+                else numOfC++;
+                basic.stackAdd(i, ch);
             }
         }
-        visited.add(basic.getState());	//초기 상태 코드 HashSet 저장
-        answerCode = getAnswerCode();	//정답이 되는 상태 코드 구하기
-        answer = gameStart();	//하노이 게임 시작!
-        bw.write(answer + "");	//최소 이동 횟수 BufferedWriter 저장
-        bw.flush();		//결과 출력
-        bw.close();
-        br.close();
+
+        goal = getAnswerCode();
+        System.out.println(gameStart());
     }
-    //BFS탐색으로 하노이 게임을 진행하는 함수
+    
+    // BFS
     static int gameStart(){
-        Queue<hanoiInfo> queue = new LinkedList<>();
-        queue.add(basic);	//초기 상태 Queue 저장
+        Queue<Hanoi> queue = new LinkedList<>();
+        queue.add(basic);
+        visited.add(basic.getState());
         while(!queue.isEmpty()){
-            hanoiInfo cur = queue.poll();
-            if(cur.getState().equals(answerCode))	//게임 목표 도달!
-                return cur.count;
-            for(int i=0;i<3;i++){
+            Hanoi cur = queue.poll();
+            if(cur.getState().equals(goal)) return cur.count;
+            
+            for(int i = 0; i < 3; i++){
                 if(!cur.emptyCheck(i)){
-                    for(int j=0;j<3;j++){
-                        if(i!=j){
+                    for(int j = 0; j < 3; j++){
+                        if(i != j){
                             //원판 이동하기
-                            char temp = cur.stackPop(i);
-                            cur.stackAdd(j,temp);
+                            char poped = cur.stackPop(i);
+                            cur.stackAdd(j,poped);
                             String state = cur.getState();
-                            if(!visited.contains(state)){	//방문하지 않았던 상태 코드일 때
+                            if(!visited.contains(state)){
                                 visited.add(state);
-                                hanoiInfo tempHanoi = new hanoiInfo();
-                                tempHanoi.stackClone((Stack<Character>) cur.A.clone(), (Stack<Character>) cur.B.clone(), (Stack<Character>) cur.C.clone());
+                                Hanoi tempHanoi = new Hanoi();
+                                tempHanoi.stackClone((Stack<Character>) cur.stickA.clone(), (Stack<Character>) cur.stickB.clone(), (Stack<Character>) cur.stickC.clone());
                                 tempHanoi.count = cur.count + 1;
                                 queue.add(tempHanoi);
                             }
                             //원판 되돌리기
-                            cur.stackAdd(i, temp);
+                            cur.stackAdd(i, poped);
                             cur.stackPop(j);
                         }
                     }
@@ -129,12 +116,12 @@ public class Main {
         }
         return -1;
     }
-    //정답이 되는 상태 코드 구하는 함수
+
     static String getAnswerCode(){
         String result =
-                "A".repeat(aCount) + " " +
-                "B".repeat(bCount) + " " +
-                "C".repeat(cCount) + " ";
+                "A".repeat(numOfA) + " " +
+                "B".repeat(numOfB) + " " +
+                "C".repeat(numOfC) + " ";
         return result;
     }
 }

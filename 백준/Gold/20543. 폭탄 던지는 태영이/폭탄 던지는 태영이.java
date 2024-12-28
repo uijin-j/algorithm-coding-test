@@ -10,11 +10,11 @@ public class Main
 	    int m = Integer.parseInt(st.nextToken());
 	    int half = m / 2;
 	    
-	    long[][] map = new long[n][n];
+	    int[][] map = new int[n][n];
 	    for(int i = 0; i < n; ++i) {
 	        st = new StringTokenizer(bf.readLine());
 	        for(int j = 0; j < n; ++j) {
-	            map[i][j] = -Long.parseLong(st.nextToken());
+	            map[i][j] = Integer.parseInt(st.nextToken());
 	        }
 	    }
 	    
@@ -22,10 +22,11 @@ public class Main
 	    long[][] sum = new long[n-m+2][n-m+2];
 	    for(int i = 1; i <= n-m+1; ++i) {
 	        for(int j = 1; j <= n-m+1; ++j) {
-	            answer[i+half-1][j+half-1] = map[i-1][j-1] - sum[i-1][j] - sum[i][j-1] + sum[i-1][j-1];
-	            if(i >= m + 1) answer[i+half-1][j+half-1] += sum[i-m][j];
-	            if(j >= m + 1) answer[i+half-1][j+half-1] += sum[i][j-m];
-	            if(i >= m + 1 && j >= m + 1) answer[i+half-1][j+half-1] -= sum[i-m][j-m];
+	            answer[i+half-1][j+half-1] = map[i-1][j-1] + sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1];
+	            if(i >= m + 1) answer[i+half-1][j+half-1] -= sum[i-m][j];
+	            if(j >= m + 1) answer[i+half-1][j+half-1] -= sum[i][j-m];
+	            if(i >= m + 1 && j >= m + 1) answer[i+half-1][j+half-1] += sum[i-m][j-m];
+	            answer[i+half-1][j+half-1] = Math.abs(answer[i+half-1][j+half-1]);
 	            
 	            sum[i][j] = answer[i+half-1][j+half-1] + sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1];
 	        }

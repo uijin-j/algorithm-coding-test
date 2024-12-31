@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 295328 KB, 시간: 388 ms
+메모리: 222536 KB, 시간: 296 ms
 
 ### 분류
 
@@ -12,7 +12,7 @@
 
 ### 제출 일자
 
-2024년 1월 2일 20:06:38
+2024년 12월 31일 13:42:16
 
 ### 문제 설명
 
@@ -20,11 +20,11 @@
 
 <p>이 나라는 N×N크기의 이차원 평면상에 존재한다. 이 나라는 여러 섬으로 이루어져 있으며, 섬이란 동서남북으로 육지가 붙어있는 덩어리를 말한다. 다음은 세 개의 섬으로 이루어진 나라의 지도이다.</p>
 
-<p style="text-align: center;"><img alt="" height="225" src="https://www.acmicpc.net/JudgeOnline/upload/201008/bri.PNG" width="243"></p>
+<p style="text-align: center;"><img alt="" height="225" src="" width="243"></p>
 
 <p>위의 그림에서 색이 있는 부분이 육지이고, 색이 없는 부분이 바다이다. 이 바다에 가장 짧은 다리를 놓아 두 대륙을 연결하고자 한다. 가장 짧은 다리란, 다리가 격자에서 차지하는 칸의 수가 가장 작은 다리를 말한다. 다음 그림에서 두 대륙을 연결하는 다리를 볼 수 있다.</p>
 
-<p style="text-align: center;"><img alt="" height="220" src="https://www.acmicpc.net/JudgeOnline/upload/201008/b2.PNG" width="247"></p>
+<p style="text-align: center;"><img alt="" height="220" src="" width="247"></p>
 
 <p>물론 위의 방법 외에도 다리를 놓는 방법이 여러 가지 있으나, 위의 경우가 놓는 다리의 길이가 3으로 가장 짧다(물론 길이가 3인 다른 다리를 놓을 수 있는 방법도 몇 가지 있다).</p>
 

@@ -1,59 +1,62 @@
-import java.util.*;
-
-// 03:09 START!
-// 이분탐색? 투포인터?
-// 일단 그리디는 아님!
 class Solution {
+    /**
+     * 모든 카드는 n+1을 만들 수 있는 짝이 딱 1장 있음!
+     *  - 첫번째 목표는 현재 라운드를 통과하기 (합이 n+1인 쌍을 만들기)
+     *  - 두번째 목표는 앞으로 라운드도 통과할 수 있도록 하기 (합이 n+1인 쌍을 최대한 많이 확보 + 최대한 빨리 확보)
+     */
     public int solution(int coin, int[] cards) {
-        int answer = 1; // 최소 1라운드 passs
-        int n = cards.length;
-        int terget = n + 1;
-        
-        Set<Integer> mine = new HashSet<>();
+        int n = cards.length; // n은 최대 1000
+        int target = n + 1;
+        boolean[] inHand = new boolean[n+1]; // 내가 손에 쥐고 있는 카드
+        boolean[] canBuy = new boolean[n+1]; // 내가 코인 주고 살 수 있는 카드
         int pair = 0;
         for(int i = 0; i < n / 3; ++i) {
-            if(mine.contains(terget - cards[i])) {
+            if(inHand[target - cards[i]]) {
                 pair++;
-                continue;
+                continue; // 무조건 한 쌍이니까, 굳이 hand에 체크 해 놓을 필요가 없음!
             }
             
-            mine.add(cards[i]);
+            inHand[cards[i]] = true;
         }
         
-        Set<Integer> save = new HashSet<>();
-        int pairInSave = 0;
-        for(int i = n / 3; i < n; i += 2) { // 한 라운드씩 진행
-            for(int j = i; j < i + 2; ++j) { // 한 라운드에 2장씩 확인
-                if(mine.contains(terget - cards[j])) { // 가져가는게 이득!
-                    if(coin <= 0) break;
-                    coin--; 
+        int round = 1;
+        int idx = n / 3;
+        int pairInCanBuy = 0; // canBuy 배열에 있는 카드 중 페어의 갯수
+        while(idx < n) {
+            for(int i = 0; i < 2; ++i) {
+                if(coin == 0) break; // 코인이 없으면 무조건 버려야 함
+                
+                int card = cards[idx++];
+                if(inHand[target - card]) { // 손에 있는 애랑 짝이면 무조건 사기 (코인 1개만 써도 되기 때문)
+                    coin--;
                     pair++;
                     continue;
                 }
-                
-                if(save.contains(terget - cards[j])) {
-                    pairInSave++; // 일단 보류
-                }
-                
-                save.add(cards[j]);
-            }
-            
-            if(pair == 0) {
-                if(pairInSave > 0 && coin >= 2) {
-                    pairInSave--;
-                    coin -= 2;
-                    answer++;
+
+                if(canBuy[target - card]) {
+                    pairInCanBuy++;
                     continue;
                 }
-                
-                // 종료
-                return answer;
+
+                canBuy[card] = true; // 미래를 위해 살 수 있는 리스트에 추가
             }
             
-            pair--;
-            answer++;
+            if(pair > 0) {
+                pair--;
+                round++;
+                continue;
+            }
+            
+            if(coin >= 2 && pairInCanBuy > 0) {
+                coin -= 2;
+                pairInCanBuy -= 1;
+                round++;
+                continue;
+            }
+            
+            return round;
         }
         
-        return answer;
+        return round;
     }
 }

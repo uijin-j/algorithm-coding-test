@@ -1,53 +1,51 @@
 import java.io.*;
 import java.util.*;
 
-// 14:16 시작!
+// 14:16 시작! 15:54 끗! (1시간 40분)
 public class Main {
     /**
      * 넣고 빼는 쿼리(a, s)는 OK (스택 자료구조를 사용)
      * 문제는 과거로 돌아가는 쿼리(t) 각 쿼리별 상태를 알 수 있어야 함
-     *  - 미리 저장?
-     *  - 쿼리를 다시 처음부터 돌면서 해당 시간을 찾기? O(n^2) = 6_400_000_000
+     *  - 미리 저장? => 메모리 초과
+     *  - 버전 관리 시스템 처럼 적절한 지점부터 쿼리를 다시 실행하면서 해당 시간의 상태를 찾기?
      */
-    static int[] parents;
     static String[][] querys;
+    static int[] parents;
 	public static void main(String[] args) throws Exception {
 	    BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 	    int n = Integer.parseInt(bf.readLine());
 	    Deque<Integer> stack = new ArrayDeque<>();
-	    parents = new int[n + 1]; // 자신의 부모를 확인
-	    querys = new String[n + 1][]; // 쿼리를 저장
+	    parents = new int[n + 1]; // parents[i]: i의 부모 (부모의 상태에서 자신까지 쿼리를 실행시키면 본인의 상태가 나옴!)
+	    querys = new String[n + 1][]; // query[i]: i 번째 쿼리
 	    StringBuilder sb = new StringBuilder();
-	    // 0 1 2 3 4 5 6 7 8 
-	    // 0 0 0 0 0 5
 	    for(int i = 1; i <= n; ++i) {
 	        String[] query = bf.readLine().split(" ");
-	        String cmd = query[0];
 	        querys[i] = query;
 	        
-	        if(cmd.equals("a")) {
-	            int k = Integer.parseInt(query[1]);
+	        String cmd = query[0];
+	        if(cmd.equals("s")) { // 삭제
+	            stack.pollLast();
+	            parents[i] = parents[i-1];
+	            if(stack.isEmpty()) sb.append(-1).append("\n");
+	            else sb.append(stack.peekLast()).append("\n");
+	            
+	            continue;
+	        }
+	        
+	        int k = Integer.parseInt(query[1]);
+	        if(cmd.equals("a")) { // 추가
 	            stack.addLast(k);
 	            parents[i] = parents[i-1];
 	            sb.append(k).append("\n");
-	        } else if (cmd.equals("s")) {
-	            stack.pollLast();
-	            parents[i] = parents[i-1];
-	            if(stack.isEmpty()) {
-	                sb.append(-1).append("\n");
-	            } else {
-	                sb.append(stack.peekLast()).append("\n");
-	            }
-	        } else {
-	           int k = Integer.parseInt(query[1]);
-	           parents[i] = i;
-	           stack = find(k - 1);
-	           if(stack.isEmpty()) {
-	               sb.append(-1).append("\n");
-	           } else {
-	               sb.append(stack.peekLast()).append("\n");
-	           }
+	            
+	            continue;
 	        }
+	        
+	        // 시간여행
+	        parents[i] = i;
+            stack = find(k - 1);
+            if(stack.isEmpty()) sb.append(-1).append("\n");
+            else sb.append(stack.peekLast()).append("\n");
 	    }
 	    
 	    System.out.println(sb.toString());
@@ -57,11 +55,8 @@ public class Main {
 	    Deque<Integer> result = new ArrayDeque<>();
 	    if(parents[time] == 0) {
 	        for(int q = 1; q <= time; ++q) {
-	            if(querys[q][0].equals("a")) {
-	                result.addLast(Integer.parseInt(querys[q][1]));
-	            } else {
-	                result.pollLast();
-	            }
+	            if(querys[q][0].equals("a")) result.addLast(Integer.parseInt(querys[q][1]));
+	            else result.pollLast();
 	        }
 	        
 	        return result;
@@ -73,11 +68,8 @@ public class Main {
 	    
 	    result = find(parents[time]);
 	    for(int q = parents[time] + 1; q <= time; ++q) {
-            if(querys[q][0].equals("a")) {
-                result.addLast(Integer.parseInt(querys[q][1]));
-            } else {
-                result.pollLast();
-            }
+            if(querys[q][0].equals("a")) result.addLast(Integer.parseInt(querys[q][1]));
+            else result.pollLast();
         }
 	    
 	    return result;

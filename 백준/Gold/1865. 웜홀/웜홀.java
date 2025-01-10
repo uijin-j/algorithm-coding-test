@@ -56,7 +56,7 @@ public class Main {
         Arrays.fill(dist, Integer.MAX_VALUE);
         dist[start] = 0;
 
-        for(int i = 0; i < n - 1; ++i) {
+        for(int i = 0; i < n; ++i) {
             boolean notUpdate = true;
             for(int j = 0; j < edges.size(); ++j) {
                 Edge edge = edges.get(j);

@@ -1,106 +1,50 @@
 import java.util.*;
 
-// 18:55 START! 20:41 END! (약 2시간..)
+
 class Solution {
     /**
-     * 이분탐색? X
-     * 그리디? 항상 가장 가까운 양(만약 양이 없으면 가장 양과 가까운 늑대)을 데려가다가, 갈 수 없으면 그대로 끝!
-     * 1. 모든 늑대 노드에서 가장 가까운 양까지 거리 구하기 (아래 방향으로만)
-     * 2. 루트 노드부터 bfs with 우선순위 큐
-     *
-     * ❗️ 그런데, 단순히 가장 가까운 양으로 하면 안됨! 다음 양이 현재 갈 수 있는 거리 내에 있으면 하위에 양이 더 많은 쪽으로 가는 것이 더 이득!
+     * 그래프 모양이기 때문에 그래프 탐색(DFS or BFS)
      */
-    public class Node {
-        int num;
-        int type; // 양은 0, 늑대는 1
-        int distToSheep; // 가장 가까운 양까지의 거리
-        int numOfSheep; // 하위에 있는 양의 수
-        
-        public Node(int num, int type, int dist, int numOfSheep) {
-            this.num = num;
-            this.type = type;
-            this.distToSheep = dist;
-            this.numOfSheep = numOfSheep;
-        }
-    }
-    
+    int n, max;
+    int[] info;
+    List<Integer>[] tree;
     public int solution(int[] info, int[][] edges) {
-        int n = info.length;
+        this.info = info;
         
-        List<List<Integer>> tree = new ArrayList<>();
-        for(int i = 0; i < n; ++i) tree.add(new ArrayList<>());
-        for(int[] edge : edges) tree.get(edge[0]).add(edge[1]);
-        
-        Map<Integer, Node> map = new HashMap<>();
+        n = info.length;
+        tree = new List[n];
         for(int i = 0; i < n; ++i) {
-            int type = info[i];
-            int[] distAndCount = calculateDistAndCount(i, tree, info);
-            map.put(i, new Node(i, type, distAndCount[0], distAndCount[1]));
+            tree[i] = new ArrayList<>();
         }
         
-        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.distToSheep - b.distToSheep);
-        pq.offer(map.get(0));
-        
-        int sheep = 0;
-        int wolf = 0;
-        while(!pq.isEmpty()) {
-            int possible = Math.max(0, sheep - 1 - wolf);
-            
-            PriorityQueue<Node> pq2 = new PriorityQueue<>((a, b) -> b.numOfSheep - a.numOfSheep);
-            while(!pq.isEmpty() && pq.peek().distToSheep <= possible) {
-               pq2.offer(pq.poll());
-            }
-            
-            if(pq2.isEmpty()) break;
-            Node node = pq2.poll();
-            
-            while(!pq2.isEmpty()) {
-               pq.offer(pq2.poll());
-            }
-            
-            if(node.type == 0) sheep += 1;
-            else wolf += 1;
-            
-            for(int next : tree.get(node.num)) {
-                pq.offer(map.get(next));
-            }
+        for(int[] edge : edges) {
+            tree[edge[0]].add(edge[1]);
         }
         
-        return sheep;
+        List<Integer> possible = new ArrayList<>();
+        possible.add(0);
+        dfs(0, 0, 0, possible);
+        
+        return max;
     }
     
-    // bfs!
-    public int[] calculateDistAndCount(int start, List<List<Integer>> tree, int[] info) {
-        Queue<Integer> q = new LinkedList<>();
-        q.offer(start);
-        int min = Integer.MAX_VALUE;
-        int count = 0;
+    public void dfs(int cur, int sheep, int wolf, List<Integer> possible) {
+        if(info[cur] == 0) sheep++;
+        else wolf++;
         
-        if(info[start] == 0) {
-            min = 0;
-            count = 1;
+        if(sheep <= wolf) return;
+
+        max = Math.max(max, sheep);
+        
+        List<Integer> next = new ArrayList<>();
+        next.addAll(possible);
+        next.remove(Integer.valueOf(cur));
+        for(int child : tree[cur]) {
+            next.add(child);
         }
         
-        int dist = 1;
-        while(!q.isEmpty()) {
-            int size = q.size();
-            
-            for(int i = 0; i < size; ++i) {
-                int node = q.poll();
-                
-                for(int next : tree.get(node)) {
-                    if(info[next] == 0) {
-                        min = Math.min(min, dist);
-                        count++;
-                    };
-                    
-                    q.offer(next);
-                }
-            }
-            
-            dist++;
+        for(int i : next) {
+            dfs(i, sheep, wolf, next);
         }
-        
-        return new int[]{min, count};
     }
 }

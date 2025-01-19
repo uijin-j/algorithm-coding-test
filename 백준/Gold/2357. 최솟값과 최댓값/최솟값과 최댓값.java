@@ -1,73 +1,97 @@
 import java.io.*;
 import java.util.*;
 
-// 21:10 시작!
-public class Main
-{
-    /**
-     * 구간 내 최대/최소 구하기
-     * 매 입력마다 선형적으로 구하면, 최악의 경우 O(NM) ~= 10_000_000_000
-     * 세그먼트 트리?
-     * 75 30 100 38 50 51 52 20 81 5
-     */
-     
-    static int[] nums, maxTree, minTree;
+public class Main {
+    static int[] minTree, maxTree, nums;
 	public static void main(String[] args) throws Exception {
 	    BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 	    StringTokenizer st = new StringTokenizer(bf.readLine());
 	    int n = Integer.parseInt(st.nextToken());
 	    int m = Integer.parseInt(st.nextToken());
+	    
 	    nums = new int[n + 1];
 	    for(int i = 1; i <= n; ++i) {
 	        nums[i] = Integer.parseInt(bf.readLine());
 	    }
 	    
-	    maxTree = new int[n * 4];
 	    minTree = new int[n * 4];
-	    
-	    initMax(1, n, 1);
-	    initMin(1, n, 1);
+	    maxTree = new int[n * 4];
+	    initMin(1, 1, n);
+	    initMax(1, 1, n);
 	    
 	    StringBuilder sb = new StringBuilder();
-	    for(int i = 1; i <= m; ++i) {
+	    for(int i = 0; i < m; ++i) {
 	        st = new StringTokenizer(bf.readLine());
 	        int from = Integer.parseInt(st.nextToken());
 	        int to = Integer.parseInt(st.nextToken());
 	        
-	        sb.append(findMin(1, n, 1, from, to))
+	        // start ~ end 사이에 있는 값 중 최대, 최솟값
+	        sb.append(findMin(1, 1, n, from, to))
 	            .append(" ")
-	            .append(findMax(1, n, 1, from, to))
+	            .append(findMax(1, 1, n, from, to))
 	            .append("\n");
 	    }
 	    
 	    System.out.println(sb);
 	}
 	
-	static int initMax(int start, int end, int node) {
-	    if(start == end) return maxTree[node] = nums[start];
-		int mid = (start + end) / 2;
-		return maxTree[node] = Math.max(initMax(start, mid, node * 2), initMax(mid + 1, end, node * 2 + 1));
+	// start ~ end 사이에서 최솟값을 minTree[node]에 저장
+	public static int initMin(int node, int start, int end) {
+	    if(start == end) {
+	        return minTree[node] = nums[start];
+	    }
+	    
+	    int half = (start + end) / 2;
+	    int left = initMin(node * 2, start, half);
+	    int right = initMin(node * 2 + 1, half + 1, end);
+	    
+	    return minTree[node] = Math.min(left, right);
 	}
 	
-	static int initMin(int start, int end, int node) {
-	    if(start == end) return minTree[node] = nums[start];
-		int mid = (start + end) / 2;
-		return minTree[node] = Math.min(initMin(start, mid, node * 2), initMin(mid + 1, end, node * 2 + 1));
+	// start ~ end 사이에서 최댓값을 maxTree[node]에 저장
+	public static int initMax(int node, int start, int end) {
+	    if(start == end) {
+	        return maxTree[node] = nums[start];
+	    }
+	    
+	    int half = (start + end) / 2;
+	    int left = initMax(node * 2, start, half);
+	    int right = initMax(node * 2 + 1, half + 1, end);
+	    
+	    return maxTree[node] = Math.max(left, right);
 	}
 	
-	static int findMax(int start, int end, int node, int left, int right) {
-	    if(end < left || right < start) return Integer.MIN_VALUE;
-		if(left <= start && end <= right) return maxTree[node];
-		
-		int mid = (start + end) / 2;
-		return Math.max(findMax(start, mid, node * 2, left, right), findMax(mid + 1, end, node * 2 + 1, left, right));
+	// start ~ end 사이에서 최솟값을 구하기
+	public static int findMin(int node, int start, int end, int from, int to) {
+	    if(from <= start && end <= to) {
+	        return minTree[node];
+	    }
+	    
+	    if(start > to || end < from) {
+	        return 1_000_000_001;
+	    }
+
+	    int half = (start + end) / 2;
+	    int left = findMin(node * 2, start, half, from, to);
+	    int right = findMin(node * 2 + 1, half + 1, end, from, to);
+	    
+	    return Math.min(left, right);
 	}
 	
-	static int findMin(int start, int end, int node, int left, int right) {
-	    if(end < left || right < start) return Integer.MAX_VALUE;
-		if(left <= start && end <= right) return minTree[node];
-		
-		int mid = (start + end) / 2;
-		return Math.min(findMin(start, mid, node * 2, left, right), findMin(mid + 1, end, node * 2 + 1, left, right));
+	// start ~ end 사이에서 최댓값을 구하기
+	public static int findMax(int node, int start, int end, int from, int to) {
+	    if(from <= start && end <= to) {
+	        return maxTree[node];
+	    }
+	    
+	    if(start > to || end < from) {
+	        return 0;
+	    }
+	    
+	    int half = (start + end) / 2;
+	    int left = findMax(node * 2, start, half, from, to);
+	    int right = findMax(node * 2 + 1, half + 1, end, from, to);
+
+	    return Math.max(left, right);
 	}
 }

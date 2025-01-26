@@ -25,9 +25,7 @@ class Solution {
         
         int[][] dp = new int[target[0] + 1][target[1] + 1]; // dp[i][j]는 i알고력과 j코딩력을 갖는데 걸리는 최단 시간
         for(int i = 0; i <= target[0]; ++i) {
-            for(int j = 0; j <= target[1]; ++j) {
-                dp[i][j] = 300;
-            }
+            Arrays.fill(dp[i], 300);
         }
         
         alp = Math.min(alp, target[0]);
@@ -36,13 +34,13 @@ class Solution {
         for(int i = alp; i <= target[0]; ++i) {
             for(int j = cop; j <= target[1]; ++j) {
                 int nextAlp = Math.min(i+1, target[0]);
-                dp[nextAlp][j] = Math.min(dp[nextAlp][j], dp[i][j] + 1);
+                dp[nextAlp][j] = Math.min(dp[nextAlp][j], dp[i][j] + 1); // 1시간 쓰고 알고력 +1
                 
                 int nextCop = Math.min(j + 1, target[1]);
-                dp[i][nextCop] = Math.min(dp[i][nextCop], dp[i][j] + 1);
+                dp[i][nextCop] = Math.min(dp[i][nextCop], dp[i][j] + 1); // 1시간 쓰고 코딩력 +1
                 
                 for(int[] problem : problems) {
-                    if(problem[0] <= i && problem[1] <= j) {
+                    if(problem[0] <= i && problem[1] <= j) { // 풀 수 있는 문제
                         nextAlp = Math.min(i + problem[2], target[0]);
                         nextCop = Math.min(j + problem[3], target[1]);
                         dp[nextAlp][nextCop] = Math.min(dp[nextAlp][nextCop], dp[i][j] + problem[4]);

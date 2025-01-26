@@ -5,8 +5,8 @@ class Solution {
     /**
      * 슬라이딩 윈도우?
      * 재생 시간의 최대 => 99 * 60 * 60 + 59 * 60 + 59 => 약 360_000
-     * 뒤에서 부터 슬라이딩 윈도우 진행
-     * 1) 처음에는 뒤에서부터 adv_time까지 시청 시간(total)을 구함
+     * 앞에서 부터 슬라이딩 윈도우 진행
+     * 1) 처음에는 0초부터 adv_time까지 시청 시간(total)을 구함
      * 2) 1초를 넘기고 그때부터 신규 사용자(+) / 빠지는 사용자(-)
      *  - 각 시간별로 들어오는 사용자와 나가는 사용자를 알아야 함
      */
@@ -19,7 +19,7 @@ class Solution {
         
         for(String log : logs) {
             int start = toSeconds(log.split("-")[0]);
-            int end = toSeconds(log.split("-")[1]) + 1;
+            int end = toSeconds(log.split("-")[1]);
             
             in.put(start, in.getOrDefault(start, 0) + 1);
             out.put(end, out.getOrDefault(end, 0) + 1);
@@ -27,12 +27,12 @@ class Solution {
         
         int playSeconds = toSeconds(play_time);
         int advSecounds = toSeconds(adv_time);
-        users = new int[playSeconds + 1];
+        users = new int[playSeconds]; // users[i]: i초에 시청자 수
         
-        int sum = sumFirst(advSecounds);
-        int max = sum;
+        long sum = sumFirst(advSecounds); // ❗️ long 으로 안해서 17번 테케 틀림!
+        long max = sum;
         int minStart = 0;
-        for(int e = advSecounds + 1, s = 1; e <= playSeconds; ++e, ++s) {
+        for(int s = 1, e = advSecounds; e < playSeconds; ++s, ++e) {
             user += in.getOrDefault(e, 0);
             user -= out.getOrDefault(e, 0);
             
@@ -51,7 +51,7 @@ class Solution {
     
     public int sumFirst(int running) { // 0 ~ running 까지 시청자 수
         int sum = 0;
-        for(int t = 0; t <= running; ++t) {
+        for(int t = 0; t < running; ++t) { // ❗️ running을 포함하면 틀림
             user += in.getOrDefault(t, 0);
             user -= out.getOrDefault(t, 0);
             

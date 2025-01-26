@@ -19,7 +19,7 @@ class Solution {
         
         for(String log : logs) {
             int start = toSeconds(log.split("-")[0]);
-            int end = toSeconds(log.split("-")[1]);
+            int end = toSeconds(log.split("-")[1]) + 1;
             
             in.put(start, in.getOrDefault(start, 0) + 1);
             out.put(end, out.getOrDefault(end, 0) + 1);
@@ -29,10 +29,10 @@ class Solution {
         int advSecounds = toSeconds(adv_time);
         users = new int[playSeconds + 1];
         
-        long sum = sumFirst(advSecounds);
-        long max = sum;
+        int sum = sumFirst(advSecounds);
+        int max = sum;
         int minStart = 0;
-        for(int e = advSecounds, s = 1; e < playSeconds; ++e, ++s) {
+        for(int e = advSecounds + 1, s = 1; e <= playSeconds; ++e, ++s) {
             user += in.getOrDefault(e, 0);
             user -= out.getOrDefault(e, 0);
             
@@ -51,7 +51,7 @@ class Solution {
     
     public int sumFirst(int running) { // 0 ~ running 까지 시청자 수
         int sum = 0;
-        for(int t = 0; t < running; ++t) {
+        for(int t = 0; t <= running; ++t) {
             user += in.getOrDefault(t, 0);
             user -= out.getOrDefault(t, 0);
             

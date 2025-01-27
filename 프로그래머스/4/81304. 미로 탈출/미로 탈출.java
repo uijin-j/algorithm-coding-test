@@ -1,82 +1,68 @@
 import java.util.*;
 
-public class Solution {
-
-    class Node {
-        int number;
-        int cost;
-        int state;
-
-        public Node(int number, int cost, int state) {
-            this.number = number;
-            this.cost = cost;
-            this.state = state;
-        }
-    }
-    
-    private static final int INF = Integer.MAX_VALUE / 2;
+class Solution {
+    // start -> end 최단거리
+    // but 트랩이 있다는 것이 다름 (트랩을 방문하면 방향이 바뀜)
     public int solution(int n, int start, int end, int[][] roads, int[] traps) {
-        int[][] graph = new int[n + 1][n + 1];
-        for(int i = 0; i <= n; ++i) Arrays.fill(graph[i], INF);
-        for(int i = 1; i <= n; i++) graph[i][i] = 0;
-        for (int[] road : roads) {
-            graph[road[0]][road[1]] = Math.min(graph[road[0]][road[1]], road[2]);
+        int m = traps.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < m; ++i) {
+            map.put(traps[i], i);
         }
-
-        boolean[][] visited = new boolean[n + 1][1 << traps.length];
-
-        PriorityQueue<Node> queue = new PriorityQueue<>((a, b) -> a.cost - b.cost);
-        queue.add(new Node(start, 0, 0));
-        while (!queue.isEmpty()) {
-            Node current = queue.poll();
-            int state = current.state;
-
-            if (current.number == end) return current.cost;
-            if (visited[current.number][current.state]) continue;
+        
+        // u -> v 방향성을 저장해야 하는데, 트랩에 연결된 간선은 방향을 변경 가능해야 함!
+        int[][] graph = new int[n+1][n+1]; // graph[i][j]: i -> j 거리 (0: 연결 X)
+        for(int i = 0; i <= n; ++i) {
+            Arrays.fill(graph[i], Integer.MAX_VALUE);
+        } 
+        
+        for(int[] road : roads) {
+            int u = road[0];
+            int v = road[1];
+            int d = road[2];
             
-            visited[current.number][current.state] = true;
+            graph[u][v] = Math.min(graph[u][v], d);
+        }
 
-            boolean currentTrapped = false;
-            Set<Integer> trapped = new HashSet<>();
-            for(int i = 0; i < traps.length; i++) {
-                int bit = 1 << i;
-
-                if((state & bit) != 0) { // 비트에 해당하는 trap이 활성 상태인 경우
-                    if(current.number == traps[i]) { // 그 트랩이 현재 노드인 경우
-                        state &= ~bit; // state에서 이 trap을 비활성화
-                        continue;
-                    }
-
-                    trapped.add(traps[i]);
-                    continue;
-                }
-
-				// 비트에 해당하는 trap이 활성 상태가 아닌 경우
-                if (current.number == traps[i]) { // 그 트랩이 현재 노드인 경우
-                    state |= bit; // state에서 이 trap을 활성화
-                    trapped.add(traps[i]);
-                    currentTrapped = true;
-                }
+        boolean[][] visit = new boolean[n+1][1 << m];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        pq.offer(new int[]{ start, 0, 0 });
+        
+        while(!pq.isEmpty()) {
+            int[] node = pq.poll();
+            int cur = node[0];
+            int state = node[1];
+            int total = node[2];
+            
+            if(cur == end) return total;
+            if(visit[cur][state]) continue;
+            visit[cur][state] = true;
+            
+            boolean curTrapped = false;
+            if(map.containsKey(cur)) {
+                int trap = map.get(cur);
+                state ^= (1 << trap); // cur의 트랩 상태 변경
+                curTrapped = (state & (1 << trap)) > 0;
             }
 
-            for (int i = 1; i <= n; i++) {
-                if (current.number == i) continue;
+            for(int next = 1; next <= n; ++next) {
+                if(graph[cur][next] == Integer.MAX_VALUE && graph[next][cur] == Integer.MAX_VALUE) continue; // 연결 X
                 
-                boolean nextTrapped = trapped.contains(i); // 다음 이동할 노드가 trap인지 체크
-                if (currentTrapped == nextTrapped) { // 현재 노드, 다음 노드 둘다 트랩이거나, 둘 다 아니거나는 결과가 동일
-                    if(graph[current.number][i] != INF) {
-                        queue.add(new Node(i, current.cost + graph[current.number][i], state));
-                    }
-                    continue;
+                boolean nextTrapped = false;
+                if(map.containsKey(next) && ((state & (1 << map.get(next))) > 0)) { 
+                    nextTrapped = true;
                 }
-
-				// 둘 중 하나가 트랩이라면 그래프의 역방향을 적용
-                if (graph[i][current.number] != INF) {
-                    queue.add(new Node(i, current.cost + graph[i][current.number], state));
+                
+                if(curTrapped == nextTrapped) { // 서로 같으면 방향이 그대로
+                    if(graph[cur][next] == Integer.MAX_VALUE) continue;
+                    pq.offer(new int[]{ next, state, total + graph[cur][next] });
+                } else { // 서로 다르면 방향이 반대
+                    if(graph[next][cur] == Integer.MAX_VALUE) continue;
+                    pq.offer(new int[]{ next, state, total + graph[next][cur] });
                 }
             }
         }
-
-        return INF;
+        
+        return -1;
     }
 }

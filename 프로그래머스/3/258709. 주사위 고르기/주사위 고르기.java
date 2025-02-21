@@ -1,100 +1,93 @@
 import java.util.*;
 
 class Solution {
-    int n;
-    int[] selected, answer;
-    int[][] dice;
-    int max = Integer.MIN_VALUE;
-    
+    int n, half, max;
+    int[] answer;
+    boolean[] selected;
     public int[] solution(int[][] dice) {
-        this.dice = dice;
         n = dice.length;
-        answer = new int[n/2];
-        selected = new int[n/2];
+        half = n / 2;
         
-        select(0, 0); // 주사위 n/2를 선택 (조합)
+        // 1. n개의 주사위 중 half개를 선택 O(nCn/2) ~= O(10C5) OK 
+        // 2. 고른 주사위를 굴려서 나올 수 있는 점수 계산 O(2*6^n/2) ~= O(6^5) OK
+        // 3. 이기는 경우를 계산  6^n = O(6^10) ~= 1억 NOT OK 
+        answer = new int[half];
+        selected = new boolean[n];
+        select(0, 0, half, dice);
+        
+        for(int i = 0; i < half; ++i) {
+            answer[i]++;
+        }
         
         return answer;
     }
     
-    private void select(int level, int start) {
-        if(level == n / 2) { // 주사위 선택 완료!
-            int[] sumA = getAllCase(selected); // A가 선택한 주사위들를 던져서 나올 수 있는 합의 모든 경우
-            int[] sumB = getAllCase(getUnselected(selected)); // B가 선택한 주사위들를 던져서 나올 수 있는 합의 모든 경우
+    public void select(int start, int level, int goal, int[][] dice) {
+        if(level == goal) {
+            List<Integer> firstPosible = new ArrayList<>();
+            List<Integer> secondPosible = new ArrayList<>();
             
-            int counts = getTotalCountsAWins(sumA, sumB); // A가 이기는 경우의 수
+            int[] first = new int[half];
+            int[] second = new int[half];
+            int idx1 = 0, idx2 = 0;
+            for(int i = 0; i < n; ++i) {
+                if(selected[i]) first[idx1++] = i;
+                else second[idx2++] = i;
+            }
             
-            if(counts > max) {
-                max = counts;
-                
-                int idx = 0;
-                for(int dice : selected) {
-                    answer[idx++] = dice + 1;
-                }
+            dfs(0, half, first, 0, firstPosible, dice);
+            dfs(0, half, second, 0, secondPosible, dice);
+            
+            secondPosible.sort((a, b) -> a - b);
+            
+            int count = 0;
+            for(int score : firstPosible) {
+                count += countLessThan(score, secondPosible);
+            }
+            
+            if(count > max) {
+                max = count;
+                answer = first;
             }
             
             return;
         }
         
         for(int i = start; i < n; ++i) {
-            selected[level] = i;
-            select(level + 1, i + 1);
+            selected[i] = true;
+            select(i+1, level+1, goal, dice);
+            selected[i] = false;
         }
     }
     
-    private int[] getAllCase(int[] selected) {
-        List<Integer> list = new ArrayList<>();
-        
-        roll(0, 0, selected, list);
-        
-        return list.stream()
-                .sorted()
-                .mapToInt(Integer::intValue)
-                .toArray();
-    }
-    
-    private void roll(int level, int sum, int[] selected, List<Integer> list) {
-        if(level == n / 2) {
-            list.add(sum);
+    public void dfs(int level, int goal, int[] arr, int sum, List<Integer> result, int[][] dice) {
+        if(level == goal) {
+            result.add(sum);
             return;
         }
         
-        for(int num : dice[selected[level]]) {
-            roll(level + 1, sum + num, selected, list);
+        for(int i = 0; i < 6; ++i) {
+            dfs(level+1, goal, arr, sum + dice[arr[level]][i], result, dice);
         }
     }
     
-    // selected 배열을 통해 선택하지 않은 주사위 리스트를 반환
-    private int[] getUnselected(int[] selected) {
-        int[] unselected = new int[n/2];
-        int idx = 0;
-        for(int i = 0; i < n; ++i) {
-            boolean isSelected = false;
-            for(int j = 0; j < n / 2; ++j) {
-                if(selected[j] == i) {
-                    isSelected = true;
-                    break;
-                }
-            }
+    public int countLessThan(int target, List<Integer> list) {
+        int left = 0;
+        int right = list.size() - 1;
+        
+        if(list.get(left) > target) return 0;
+        if(list.get(right) < target) return list.size();
+        
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
             
-            if(!isSelected) unselected[idx++] = i;
+            if(list.get(mid) >= target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
         }
         
-        return unselected;
-    }
-    
-    private int getTotalCountsAWins(int[] sumA, int[] sumB) {
-        int total = 0;
-        
-        int p = 0;
-        for(int a : sumA) {
-            while(p < sumB.length && a > sumB[p]) {
-                p++;
-            }
-            
-            total += p;
-        }
-        
-        return total;
+        return left; 
     }
 }

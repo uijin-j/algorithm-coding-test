@@ -1,43 +1,70 @@
 import java.util.*;
 
-/**
- * 15:25 START!
- * S, A, B를 모두 포함하는 집합의 최단 비용
- * S에서 A, B까지의 최단거리를 구해서 더하기? (이렇게 하면 안됨! 각각의 최단거리가 아니여도 합이 최소가 될 수 있기 때문)
- * dfs?
- *
- * 모든 노드에서 모든 노드로의 최단거리를 구한 뒤(플로이드 와샬) O(n^3) ~= 8_000_000
- * S노드에서 1..N 노드까지 함께 택시를 타고, 하차 노드에서 A, B 노드까지 최소 비용을 구해서 더하기?
- */ 
 class Solution {
-    static final int INF = 20_000_000;
+    // 경유지를 1개 선택 O(n) ~= 200
+    // 해당 경유지까지 함께 택시를 탔을 때 최소 요금 계산 S -> K + K -> A + K -> B
+    
+    List<List<Node>> graph;
+    int MAX = 20_000_000;
     public int solution(int n, int s, int a, int b, int[][] fares) {
-        int[][] dist = new int[n+1][n+1]; // dist[i][j]는 i노드에서 j노드까지의 최단거리!
-        
+        graph = new ArrayList<>();
         for(int i = 0; i <= n; ++i) {
-            Arrays.fill(dist[i], INF);
-            dist[i][i] = 0;
+            graph.add(new ArrayList<>());
         }
         
         for(int[] fare : fares) {
-            dist[fare[0]][fare[1]] = fare[2];
-            dist[fare[1]][fare[0]] = fare[2];
+            int from = fare[0];
+            int to = fare[1];
+            int cost = fare[2];
+            
+            graph.get(from).add(new Node(to, cost));
+            graph.get(to).add(new Node(from, cost));
         }
         
-        for(int k = 1; k <= n; ++k) { // ❗️ 플로이드 와샬은 경유지 K가 젤 바깥 for문에 위치한다..
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i == j || i == k || j == k) continue;
-                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]); 
+        int[] distFromS = new int[n+1];
+        int[] distFromA = new int[n+1];
+        int[] distFromB = new int[n+1];
+        
+        findDist(s, distFromS);
+        findDist(a, distFromA);
+        findDist(b, distFromB);
+        
+        int answer = MAX;
+        for(int i = 1; i <= n; ++i) { // i를 경유했을 때 최소 비용
+            int total = distFromS[i] + distFromA[i] + distFromB[i];
+            answer = Math.min(answer, total);
+        }
+        
+        return answer;
+    }
+    
+    public class Node {
+        int to, cost;
+        
+        public Node(int to, int cost) {
+            this.to = to;
+            this.cost = cost;
+        }
+    }
+    
+    public void findDist(int start, int[] dist) {
+        Arrays.fill(dist, MAX);
+        
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+        pq.offer(new Node(start, 0));
+        
+        while(!pq.isEmpty()) {
+            Node cur = pq.poll();
+            
+            if(dist[cur.to] < cur.cost) continue;
+            dist[cur.to] = cur.cost;
+            
+            for(Node next : graph.get(cur.to)) {
+                if(dist[next.to] > cur.cost + next.cost) {
+                    dist[next.to] = cur.cost + next.cost;
+                    pq.offer(new Node(next.to, cur.cost + next.cost));
                 }
             }
         }
-        
-        int min = Integer.MAX_VALUE;
-        for(int i = 1; i <= n; ++i) {
-            min = Math.min(min, dist[s][i] + dist[i][a] + dist[i][b]);
-        }
-        
-        return min;
     }
 }

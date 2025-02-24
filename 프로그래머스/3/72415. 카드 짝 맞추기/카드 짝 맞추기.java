@@ -1,149 +1,122 @@
 import java.util.*;
 
-// 22:03 START!  23:30 STOP! (1시간 30분)
-// 17:22 RESTART!
 class Solution {
     /**
-     * 1. 각 카드를 뽑는 순서를 정한다. 최대 8개 O(8! * 2^8)
-     * 2. 순서대로 카드를 뽑는다. (최소한의 움직임으로!)
-     * 참고) 엔터 입력은 카드 수만큼 한다.
+     * 가장 가까운 카드부터 없애는 것이 최선의 방법은 아님! 왜냐하면 그 카드를 통해서 shift할 때 더 빨리 갈수도 있기 때문!
+     * 완탐? 남은 카드의 종류가 N개 일 때, O(N! * 2^N) ~= O(6!*2^6) ~= 72,000
      */
     int[][] board;
-    int[] start;
-    HashMap<Integer, List<int[]>> map = new HashMap<>(); 
-    int numOfPair = 0;
+    Map<Integer, List<Integer>> map;
+    List<int[]> cards;
+    int[] selected;
     boolean[] check;
+    int[] start;
     int min = Integer.MAX_VALUE;
-    public int solution(int[][] board, int r, int c) {    
+    public int solution(int[][] board, int r, int c) {
         this.board = board;
-        start = new int[]{r, c};
-        
+        start = new int[]{ r, c };
+        map = new HashMap<>();
+        cards = new ArrayList<>();
         for(int i = 0; i < 4; ++i) {
             for(int j = 0; j < 4; ++j) {
                 if(board[i][j] > 0) {
-                    int num = board[i][j];
-                    map.putIfAbsent(num, new ArrayList<>());
-                    map.get(num).add(new int[]{i, j});
+                    int type = board[i][j];
+                    cards.add(new int[]{ i, j });
+                    map.putIfAbsent(type, new ArrayList<>());
+                    map.get(type).add(cards.size() - 1);
                 }
             }
         }
         
-        numOfPair = map.size();
-
-        check = new boolean[9];
-        Deque<int[]> stack = new ArrayDeque<>();
-        play(0, stack);
-    
-        return min;
+        int total = cards.size();
+        selected = new int[total];
+        check = new boolean[total/2 + 1];
+        dfs(0, total);
+        
+        return min + total;
     }
     
-    public void play(int level, Deque<int[]> stack) {
-        if(level == numOfPair) {
-            int[] point = new int[]{start[0], start[1]};
-            int[][] copy = copyArray(board);
+    public void dfs(int level, int goal) {
+        if(level == goal) {
             int total = 0;
-            
-            for(int[] target : stack) {
-                int count = go(point, target, copy);
-                total += count + 1;
-                point = new int[]{target[0], target[1]};
-                copy[target[0]][target[1]] = 0;
+            int[] before = start;
+            boolean[][] hidden = new boolean[4][4];
+            for(int i = 0; i < goal; ++i) {
+                int next = selected[i];
+                int[] target = cards.get(next);
+                total += calculate(before, target, hidden);
+                before = target;
+                hidden[target[0]][target[1]] = true;
+                
+                if(total >= min) return;
             }
-
+            
             min = Math.min(min, total);
             return;
         }
         
-        for(int num : map.keySet()) {
-            if(!check[num]) {
-                check[num] = true;
-                
-                for(int i = 0; i < 2; ++i) {
-                    stack.push(map.get(num).get(i));
-                    stack.push(map.get(num).get((i + 1) % 2));
-                    play(level + 1, stack);
-                    stack.pop();
-                    stack.pop();
-                }
-                
-                check[num] = false;
-            }
+        for(int type = 1; type <= goal/2; ++type) {
+            if(check[type]) continue;
+            check[type] = true;
+            
+            selected[level] = map.get(type).get(0);
+            selected[level+1] = map.get(type).get(1);
+            dfs(level+2, goal);
+            
+            selected[level] = map.get(type).get(1);
+            selected[level+1] = map.get(type).get(0);
+            dfs(level+2, goal);
+            
+            check[type] = false;
         }
     }
     
-    int[] dx = {-1, 0, 1, 0};
-    int[] dy = {0, 1, 0, -1};
-    
-    // point에서 target으로 가는 최단거리
-    public int go(int[] point, int[] target, int[][] board) {
-        Queue<Node> q = new LinkedList<>();
-        q.offer(new Node(point[0], point[1], 0));
+    int[] dx = { -1, 0, 1, 0 };
+    int[] dy = { 0, 1, 0, -1 };
+    public int calculate(int[] from, int[] to, boolean[][] hidden) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{ from[0], from[1], 0 });
         
         while(!q.isEmpty()) {
-            Node node = q.poll();
+            int[] cur = q.poll();
+            int x = cur[0];
+            int y = cur[1];
+            int cost = cur[2];
             
-            if(node.x == target[0] && node.y == target[1]) {
-                return node.count;
+            if(x == to[0] && y == to[1]) {
+                return cost;
             }
             
             for(int d = 0; d < 4; ++d) {
-                int nx = node.x + dx[d];
-                int ny = node.y + dy[d];
+                int nx = cur[0] + dx[d];
+                int ny = cur[1] + dy[d];
                 
-                if(nx >= 0 && nx < 4 && ny >= 0 && ny < 4) {    
-                    q.offer(new Node(nx, ny, node.count + 1));
+                if(nx >= 0 && nx < 4 && ny >= 0 && ny < 4) {
+                    q.offer(new int[]{ nx, ny, cost + 1 });
                 }
+            }
+            
+            for(int d = 0; d < 4; ++d) {
+                int nx = cur[0] + dx[d];
+                int ny = cur[1] + dy[d];
                 
-                // ctrl
-                int[] np = ctrl(d, node.x, node.y, board);
-                nx = np[0];
-                ny = np[1];
-                if(nx == target[0] && ny == target[1]) {
-                    point = new int[]{nx, ny};
-                    return node.count + 1;
+                while(true) {
+                    if(nx < 0 || nx >= 4 || ny < 0 || ny >= 4) {
+                        q.offer(new int[]{ nx - dx[d], ny - dy[d], cost + 1 });
+                        break;
+                    }
+                    
+                    if(board[nx][ny] > 0 && !hidden[nx][ny]) {
+                        q.offer(new int[]{ nx, ny, cost + 1 });
+                        break;
+                    }
+                    
+                    nx += dx[d];
+                    ny += dy[d];
                 }
-                q.offer(new Node(nx, ny, node.count + 1));
             }
         }
         
         return -1;
-    }
-    
-    public int[] ctrl(int d, int x, int y, int[][] board) {
-        int nx = x + dx[d];
-        int ny = y + dy[d];
-        while(nx >= 0 && nx < 4 && ny >= 0 && ny < 4) {
-            if(board[nx][ny] > 0) return new int[]{nx, ny};
-            nx += dx[d];
-            ny += dy[d];
-        }
-        
-        nx -= dx[d];
-        ny -= dy[d];
-        return new int[]{nx, ny};
-    }
-    
-    public class Node {
-        int x;
-        int y;
-        int count;
-        
-        public Node(int x, int y, int count) {
-            this.x = x;
-            this.y = y;
-            this.count = count;
-        }
-    }
-    
-    public int[][] copyArray(int[][] board) {
-        int[][] result = new int[4][4];
-        
-        for(int i = 0; i < 4; ++i) {
-            for(int j = 0; j < 4; ++j) {
-                result[i][j] = board[i][j];
-            }
-        }
-        
-        return result;
     }
 }

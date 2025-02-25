@@ -12,7 +12,7 @@ public class Main
     static int n, m;
     static int INF = 10_000 * 5_000;
     static List<List<Node>> graph;
-    static int[] path;
+    static String[] bestPath;
 	public static void main(String[] args) throws Exception {
 	    BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 	    StringTokenizer st = new StringTokenizer(bf.readLine());
@@ -34,16 +34,22 @@ public class Main
 	        graph.get(to).add(new Node(from, cost));
 	    }
 	    
-	    path = new int[n+1];
 	    int original = findBest();
+	    int[] paths = new int[bestPath.length];
+	    for(int i = 0; i < paths.length; ++i) paths[i] = Integer.parseInt(bestPath[i]);
+	    
+	    int from = 1;
 	    int max = original;
-	    for(int to = 1; to <= n; ++to) {
-	        max = Math.max(max, findBest(path[to], to));
+	    for(int i = 1; i < paths.length; ++i) {
+	        int to = paths[i];
+	        max = Math.max(max, findBest(from, to));
 	        
 	        if(max == INF) {
 	            System.out.println(-1);
 	            return;
 	        }
+	        
+	        from = to;
 	    }
 	    
 	    System.out.println(max - original);
@@ -70,20 +76,22 @@ public class Main
 	    Arrays.fill(min, INF);
 	    
 	    PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
-	    pq.offer(new Node(1, 0));
+	    pq.offer(new Node(1, 0, "1 "));
 	    while(!pq.isEmpty()) {
 	        Node cur = pq.poll();
 	        
 	        if(min[cur.to] < cur.cost) continue;
 	        min[cur.to] = cur.cost;
 	        
-	        if(cur.to == n) return cur.cost;
+	        if(cur.to == n) {
+	            bestPath = cur.path.substring(0, cur.path.length() - 1).split(" ");
+	            return cur.cost;
+	        }
 	        
 	        for(Node next : graph.get(cur.to)) {
 	            if(min[next.to] > cur.cost + next.cost) {
 	                min[next.to] = cur.cost + next.cost;
-	                path[next.to] = cur.to;
-	                pq.offer(new Node(next.to, cur.cost + next.cost, cur.path + next.to));
+	                pq.offer(new Node(next.to, cur.cost + next.cost, cur.path + next.to + " "));
 	            }
 	        }
 	    }

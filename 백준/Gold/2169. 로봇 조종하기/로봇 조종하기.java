@@ -54,7 +54,7 @@ public class Main
 	        }
 	        
 	        for(int j = 0; j < m; ++j) {
-	            dp[i][j] = Math.max(Math.max(toRight[j], toLeft[j]), dp[i-1][j] + map[i][j]);
+	            dp[i][j] = Math.max(toRight[j], toLeft[j]);
 	        }
 	    }
 	    

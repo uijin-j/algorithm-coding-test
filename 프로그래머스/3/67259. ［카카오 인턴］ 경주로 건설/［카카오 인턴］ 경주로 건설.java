@@ -1,56 +1,13 @@
 import java.util.*;
 
-// 00:52 시작!
 class Solution {
-    /**
-     * 최소 비용으로 (0,0) → (n-1,n-1)까지 가기? BFS
-     */
-    int[] dx = { -1, 0, 1, 0 };
-    int[] dy = { 0, 1, 0, -1 };
-    int[][][] min;
-    public int solution(int[][] board) {
-        int n = board.length;
-        min = new int[n][n][4];
-        for(int i = 0; i < n; ++i) {
-            for(int j = 0; j < n; ++j) {
-                Arrays.fill(min[i][j], Integer.MAX_VALUE);   
-            }
-        }
-        for(int i = 0; i < 4; ++i) min[0][0][i] = 0;
-
-        Queue<Node> q = new LinkedList<>();
-        q.offer(new Node(0, 0, 0, -1));
-        while(!q.isEmpty()) {
-            Node cur = q.poll();
-            int x = cur.x;
-            int y = cur.y;
-            int d = cur.direction;
-            int cost = cur.cost;
-
-            for(int i = 0; i < 4; ++i) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-                
-                if(nx >= 0 && nx < n && ny >= 0 && ny < n && board[nx][ny] == 0) {
-                    int nextCost = cur.cost + ((cur.direction == i || cur.direction == -1) ? 100 : 600);
-                    if(nextCost < min[nx][ny][i]) {
-                        q.offer(new Node(nx, ny, nextCost,i));
-                         min[nx][ny][i] = nextCost;
-                    }
-                }
-            }
-        }
-        
-        int answer = Integer.MAX_VALUE;
-        for(int i = 0; i < 4; ++i) {
-            answer = Math.min(answer, min[n-1][n-1][i]);
-        }
-        
-        return answer;
-    }
-    
+    // 최소비용으로 목적지에 가는 방법 => bfs?
+    int[] dx = {-1, 0, 1, 0};
+    int[] dy = {0, 1, 0, -1};
     public class Node {
-        int x, y, cost, direction;
+        int x, y;
+        int cost;
+        int direction;
         
         public Node(int x, int y, int cost, int direction) {
             this.x = x;
@@ -58,5 +15,46 @@ class Solution {
             this.cost = cost;
             this.direction = direction;
         }
+    }
+
+    public int solution(int[][] board) {
+        int n = board.length;
+        int[][] dist = new int[n][n];
+        for(int i = 0; i < n; ++i) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        
+        Queue<Node> q = new LinkedList<>();
+        q.offer(new Node(0, 0, 0, 1));
+        q.offer(new Node(0, 0, 0, 2));
+        int answer = Integer.MAX_VALUE;
+        while(!q.isEmpty()) {
+            Node node = q.poll();
+
+            if(node.x == n-1 && node.y == n-1) {
+                answer = Math.min(answer, node.cost);
+                continue;
+            }
+            
+            for(int i = 0; i < 4; ++i) {
+                int nx = node.x + dx[i];
+                int ny = node.y + dy[i];
+                
+                if(nx >= 0 && nx < n && ny >= 0 && ny < n && board[nx][ny] == 0) {
+                    int cost = node.direction == i ? 100 : 600;
+                    if(dist[nx][ny] == Integer.MAX_VALUE || cost < dist[nx][ny] + 500) {
+                        dist[node.x][node.y] = node.cost;
+                        q.offer(new Node(nx, ny, cost, i));
+                    }
+                }
+            }
+        }
+        
+        return answer;
+    }
+    
+    public boolean hasCorner(int d1, int d2) {
+        if(d1 == -1 || d2 == -1) return false;
+        return dx[d1] * dx[d2] + dy[d1] * dy[d2] == 0;
     }
 }

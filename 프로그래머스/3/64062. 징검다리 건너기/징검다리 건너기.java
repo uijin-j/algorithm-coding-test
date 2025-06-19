@@ -1,37 +1,39 @@
 import java.util.*;
 
+// 23:31 시작!
 class Solution {
-    // 이분탐색?
+    /**
+     * 완탐? O(200_000 * 200_000_000) 시간초과
+     * K 크기의 구간들 중 구간의 최댓값이 최소인 구간을 찾기!
+     * 투 포인터? 
+     */
     public int solution(int[] stones, int k) {
-        int left = 1;
-        int right = 200_000_001;
-        int answer = 1;
-        while(left <= right) {
-            int mid = left + (right - left) / 2;
-            
-            if(pass(stones, k, mid)) {
-                answer = mid;
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
+        int n = stones.length;
+        
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> b.num - a.num);
+        for(int i = 0; i < k; ++i) {
+            pq.offer(new Node(i, stones[i]));
         }
         
-        return answer;
+        int min = pq.peek().num;
+        for(int to = k, from = 1; to < n; ++to, ++from) {
+            pq.offer(new Node(to, stones[to]));
+            while(pq.peek().idx < from) {
+                pq.poll();
+            }
+            
+            min = Math.min(min, pq.peek().num);
+        }
+        
+        return min;
     }
     
-    // target 명의 사람이 지나갈 수 있나요?
-    public boolean pass(int[] stones, int k, int target) {
-        int count = 0;
-        for(int i = 0; i < stones.length; ++i) {
-            if(stones[i] - target < 0) {
-                count++;
-            } else {
-                if(count >= k) return false;
-                count = 0;
-            }
-        }
+    public class Node {
+        int idx, num;
         
-        return (count < k) ? true : false;
+        public Node(int idx, int num) {
+            this.idx = idx;
+            this.num = num;
+        }
     }
 }

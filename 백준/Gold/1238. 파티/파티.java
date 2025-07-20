@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
   static int[] go, back;
@@ -13,11 +14,12 @@ public class Main {
     }
   }
 
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
-    n = sc.nextInt(); // 마을의 수(=학생의 수)
-    m = sc.nextInt(); // 단방향 도로의 수
-    x = sc.nextInt(); // 파티가 열리는 마을
+  public static void main(String[] args) throws Exception {
+    BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+	StringTokenizer st = new StringTokenizer(bf.readLine());
+    n = Integer.parseInt(st.nextToken()); // 마을의 수(=학생의 수)
+    m = Integer.parseInt(st.nextToken()); // 단방향 도로의 수
+    x = Integer.parseInt(st.nextToken()); // 파티가 열리는 마을
 
     go = new int[n+1];
     back = new int[n+1];
@@ -34,9 +36,10 @@ public class Main {
     }
 
     for(int i = 0; i < m; ++i) {
-      int from = sc.nextInt();
-      int to = sc.nextInt();
-      int time = sc.nextInt();
+      st = new StringTokenizer(bf.readLine());
+      int from = Integer.parseInt(st.nextToken());
+      int to = Integer.parseInt(st.nextToken());
+      int time = Integer.parseInt(st.nextToken());
 
       goList.get(from).add(new Node(to, time));
       backList.get(to).add(new Node(from, time));
@@ -63,7 +66,6 @@ public class Main {
       Node now = q.poll();
 
       if(now.time > min[now.to]) continue;
-
       for(Node next: list.get(now.to)) {
         if(now.time + next.time < min[next.to]) {
           min[next.to] = now.time + next.time;

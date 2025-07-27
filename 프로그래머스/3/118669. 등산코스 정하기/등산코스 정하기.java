@@ -1,13 +1,12 @@
 import java.util.*;
 
-// 15:41 START!
+// 15:41 START! 16:27 END! (50분)
 class Solution {
     /**
-     * 2_500_000_000
-     * n * nlogn
-     * 모든 산 봉우리에서 게이트로 가는 최단 intensity를 구하고 그 중에 최솟값을 리턴!
+     * 모든 산 봉우리에서 게이트로 가는 최소 intensity를 구하고 그 중에 최솟값을 리턴! => O(n * nlogn) ~= 2_500_000_000 애매하네..
+     * 
+     * 다익스트라와 비슷하게 최소 intensity를 구하지만, 거리가 아닌 intensity라는 점이 다름!
      */
-    
     public class Node {
         int node;
         int intensity;
@@ -19,7 +18,7 @@ class Solution {
     }
     
     List<List<Node>> graph;
-    Set<Integer> gateSet, summitSet;
+    Set<Integer> gateSet, summitSet; // 정상에서 탐색할 때, 다른 정상은 가면 안되고 게이트를 발견하면 탐색을 중단해야 하기 때문에 필요!
     public int[] solution(int n, int[][] paths, int[] gates, int[] summits) {
         int[] answer = new int[]{ 0, Integer.MAX_VALUE };
         
@@ -54,7 +53,7 @@ class Solution {
     
     public int findBestIntensity(int summit, int n) {
         boolean[] check = new boolean[n+1];
-        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.intensity - b.intensity);
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.intensity - b.intensity); // intensity가 작은 애가 먼저 나옴!
         pq.offer(new Node(summit, 0));
         while(!pq.isEmpty()) {
             Node node = pq.poll();

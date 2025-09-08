@@ -1,93 +1,101 @@
 import java.util.*;
 
+/**
+ * 22:30 시작
+ * n개의 주사위 중 n/2개를 선택  O(nCn/2) = O(10C5) ~= O(280)
+ * 주사위를 굴려서 나오는 경우의 수 6^10
+ * 완탐으로 풀면 O(280*6^10) --> 시간 초과
+ * 
+ * 일단 주사위를 n/2개 뽑고, 해당 주사위를 굴려 나올 수 있는 경우의 수들을 계산 O(280*6^5) ~= O(28_000_000) OK
+ * 280개의 경우를 확인하면서, 이길 확률을 계산 O(280 * 100_000 * 100) ~= O(2_800_000_000) 아슬아슬 (사실 140번만 해도되긴 함)
+ */
 class Solution {
-    int n, half, max;
-    int[] answer;
-    boolean[] selected;
+    int n;
+    boolean[] check;
+    List<int[]> cases = new ArrayList<>();
+    List<List<Integer>> results = new ArrayList<>();
+    List<List<Integer>> ops = new ArrayList<>();
     public int[] solution(int[][] dice) {
         n = dice.length;
-        half = n / 2;
+        check = new boolean[n];
         
-        // 1. n개의 주사위 중 half개를 선택 O(nCn/2) ~= O(10C5) OK 
-        // 2. 고른 주사위를 굴려서 나올 수 있는 점수 계산 O(2*6^n/2) ~= O(6^5) OK
-        // 3. 이기는 경우를 계산  6^n = O(6^10) ~= 1억 NOT OK 
-        answer = new int[half];
-        selected = new boolean[n];
-        select(0, 0, half, dice);
+        choice(0, 0, dice);
         
-        for(int i = 0; i < half; ++i) {
-            answer[i]++;
+        for(List<Integer> op : ops) {
+            op.sort((a, b) -> a - b);
         }
         
+        int[] answer = new int[n/2];
+        int max = 0;
+        for(int i = 0; i < results.size(); ++i) {
+            List<Integer> result = results.get(i);
+            List<Integer> op = ops.get(i);
+            
+            int total = 0;
+            for(int num : result) total += findLessThan(num, op);
+            
+            if(total > max) {
+                max = total;
+                answer = cases.get(i);
+            }
+        }
+        
+        for(int i = 0; i < n/2; ++i) answer[i] += 1;
         return answer;
     }
     
-    public void select(int start, int level, int goal, int[][] dice) {
-        if(level == goal) {
-            List<Integer> firstPosible = new ArrayList<>();
-            List<Integer> secondPosible = new ArrayList<>();
-            
-            int[] first = new int[half];
-            int[] second = new int[half];
+    public void choice(int level, int start, int[][] dice) {
+        if(level == n/2) {
+            // 주사위 선택 완료
+            int[] selected = new int[n/2];
+            int[] unselected = new int[n/2];
             int idx1 = 0, idx2 = 0;
             for(int i = 0; i < n; ++i) {
-                if(selected[i]) first[idx1++] = i;
-                else second[idx2++] = i;
+                if(check[i]) selected[idx1++] = i;
+                else unselected[idx2++] = i;
             }
             
-            dfs(0, half, first, 0, firstPosible, dice);
-            dfs(0, half, second, 0, secondPosible, dice);
+            List<Integer> cases1 = new ArrayList<>();
+            List<Integer> cases2 = new ArrayList<>();
+            dfs(0, 0, dice, selected, cases1);
+            dfs(0, 0, dice, unselected, cases2);
             
-            secondPosible.sort((a, b) -> a - b);
-            
-            int count = 0;
-            for(int score : firstPosible) {
-                count += countLessThan(score, secondPosible);
-            }
-            
-            if(count > max) {
-                max = count;
-                answer = first;
-            }
-            
+            cases.add(selected);
+            results.add(cases1);
+            ops.add(cases2);
             return;
         }
         
         for(int i = start; i < n; ++i) {
-            selected[i] = true;
-            select(i+1, level+1, goal, dice);
-            selected[i] = false;
+            check[i] = true;
+            choice(level+1, i+1, dice);
+            check[i] = false;
         }
     }
     
-    public void dfs(int level, int goal, int[] arr, int sum, List<Integer> result, int[][] dice) {
-        if(level == goal) {
-            result.add(sum);
+    public void dfs(int level, int sum, int[][] dice, int[] arr, List<Integer> list) {
+        if(level == arr.length) {
+            list.add(sum);
             return;
         }
         
         for(int i = 0; i < 6; ++i) {
-            dfs(level+1, goal, arr, sum + dice[arr[level]][i], result, dice);
-        }
+            dfs(level+1, sum + dice[arr[level]][i], dice, arr, list);
+        } 
     }
     
-    public int countLessThan(int target, List<Integer> list) {
+    public int findLessThan(int target, List<Integer> list) {
         int left = 0;
-        int right = list.size() - 1;
-        
-        if(list.get(left) > target) return 0;
-        if(list.get(right) < target) return list.size();
-        
-        while(left <= right) {
+        int right = list.size();
+        while(left < right) {
             int mid = left + (right - left) / 2;
-            
-            if(list.get(mid) >= target) {
-                right = mid - 1;
-            } else {
+            if (list.get(mid) < target) {
                 left = mid + 1;
+            } else {
+                right = mid;
             }
         }
         
-        return left; 
+        return left;
     }
 }

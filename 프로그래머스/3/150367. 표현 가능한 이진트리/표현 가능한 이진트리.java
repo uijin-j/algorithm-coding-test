@@ -1,51 +1,69 @@
+import java.util.*;
+
+/**
+ * n은 최대 10_000
+ * 
+ * 1. 일단 numbers를 돌면서 2진수로 변환 (앞에 0을 어떻게 채울까?)
+ * 2. 재귀적으로 탐색하면서 2진 트리로 표현 가능한지 확인
+ */
 class Solution {
     public int[] solution(long[] numbers) {
         int n = numbers.length;
         int[] answer = new int[n];
         
         for(int i = 0; i < n; ++i) {
-            String binary = Long.toBinaryString(numbers[i]);
+            long number = numbers[i];
             
-            // 1. 앞에 생략된 0 채우기
-            int len = binary.length();
-            int target = findTarget(len);
-
-            binary = "0".repeat(target - len) + binary;
-            
-            // 2. 이진 트리로 수를 표현할 수 있는지 확인
-            if(possible(binary, 0, binary.length() - 1)) {
-                answer[i] = 1;
+            // 1. 이진수로 변환
+            StringBuilder sb = new StringBuilder();
+            while(number >= 1) {
+                if(number % 2 == 0) {
+                    sb.insert(0, "0");
+                } else {
+                    sb.insert(0, "1");
+                    number--;
+                }
+                
+                number /= 2;
             }
+            
+            if(number == 1) sb.insert(0, "1");
+            
+            // 2. 0 갯수 맞추기
+            // 1(=1+2*0) 3(=1+2*1) 7(=3+2*2) 15(=7+2*4) ...
+            int len = sb.length();
+            int num = 1;
+            int idx = 1;
+            while(num < len) {
+                num += 2 * idx;
+                idx *= 2;
+            }
+            
+            for(int j = 0; j < num-len; ++j) sb.insert(0, "0");
+            String binary = sb.toString();
+            
+            // 3. 표현 가능한지 확인
+            boolean possible = check(binary, 0, binary.length() - 1);
+            if(possible) answer[i] = 1;
         }
         
         return answer;
     }
     
-    public int findTarget(int n) {
-        int num = 1;
-        int count = 1;
-        while(num < n) {
-            num += Math.pow(2, count++);
+    public boolean check(String binary, int left, int right) {
+        // left~right가 표현가능한 이진 트리인지 확인
+        if(left == right) return true;
+        
+        int mid = (left + right) / 2;
+        if (binary.charAt(mid) == '0') {
+            // 처음에 바로 false를 리턴해서 틀림!
+            int leftRoot = (left + mid - 1) / 2;
+            int rightRoot = (mid + 1 + right) / 2;
+            
+            if(binary.charAt(leftRoot) != '0' || binary.charAt(rightRoot) != '0') return false;
         }
         
-        return num;
-    }
-    
-    public boolean possible(String binary, int start, int end) {
-        if(start == end) return true;
-        
-        int mid = (start + end) / 2;
-        if(binary.charAt(mid) == '0') {
-            int leftRoot = (start + mid - 1) / 2;
-            int rightRoot = (mid + 1 + end) / 2;
-
-            if(binary.charAt(leftRoot) != '0' || binary.charAt(rightRoot) != '0') return false;
-        }    
-        
-        boolean left = possible(binary, start, mid - 1);
-        boolean right = possible(binary, mid + 1, end);
-
-        if(left && right) return true;
+        if(check(binary, left, mid - 1) && check(binary, mid + 1, right)) return true;
         return false;
     }
 }

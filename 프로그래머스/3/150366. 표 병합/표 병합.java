@@ -47,8 +47,6 @@ class Solution {
                 int from = getPoint(x1, y1);
                 int to = getPoint(x2, y2);
                
-                if(from == to) continue;
-                
                 union(from, to);
                 
                 continue;
@@ -61,7 +59,6 @@ class Solution {
                 
                 int target = find(point);
                 String before = values[find(point)];
-                
                 boolean[] check = new boolean[2501];
                 for(int i = 1; i <= 2500; ++i) {
                     if(find(i) == target) {
